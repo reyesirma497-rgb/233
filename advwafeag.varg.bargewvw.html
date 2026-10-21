@@ -1,1 +1,1866 @@
-123
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>SDBREAMTK</title>
+    <!-- CDN Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-md5@0.9.2/src/md5.min.js"></script>
+    <style>
+        /* ==========================================================================
+           CSS Variables & Theme (Style: 3D Soft UI / Neumorphism + Glassmorphism)
+           ========================================================================== */
+        :root {
+            /* Colors */
+            --bg-color: #f0f4f9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #3b82f6;
+            --primary-light: #93c5fd;
+            --primary-dark: #2563eb;
+            --accent-orange: #f97316;
+            --accent-orange-light: #fdba74;
+            --accent-red: #ef4444;
+            --accent-green: #10b981;
+            
+            /* 3D & Shadows */
+            --shadow-out: 8px 8px 16px rgba(163, 177, 198, 0.4), -8px -8px 16px rgba(255, 255, 255, 0.8);
+            --shadow-in: inset 4px 4px 8px rgba(163, 177, 198, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+            --shadow-sm: 4px 4px 8px rgba(163, 177, 198, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.8);
+            --shadow-float: 0 10px 25px rgba(59, 130, 246, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            
+            /* Spacing & Radius */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+            
+            /* Safe Area */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        /* Reset & Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        input, button, textarea {
+            font-family: inherit;
+            outline: none;
+            border: none;
+        }
+        button {
+            cursor: pointer;
+            background: none;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Utility Classes */
+        .flex { display: flex; }
+        .flex-col { display: flex; flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .text-center { text-align: center; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        
+        /* 3D Card Style */
+        .card-3d {
+            background: var(--bg-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-out);
+            padding: var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-3d-inner {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5));
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-in);
+            padding: var(--spacing-md);
+        }
+
+        /* Button 3D */
+        .btn-3d {
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius-full);
+            padding: 12px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+        }
+        .btn-3d:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+        }
+        .btn-3d:disabled {
+            background: var(--text-muted);
+            box-shadow: none;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        /* App Container */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        /* Page Transition */
+        .page-enter-active, .page-leave-active {
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .page-enter-from, .page-leave-to {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: calc(80px + var(--safe-bottom));
+            position: relative;
+        }
+        .main-content.no-tab {
+            padding-bottom: var(--spacing-lg);
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(64px + var(--safe-bottom));
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.8);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            padding-bottom: var(--safe-bottom);
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            width: 60px;
+            height: 48px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .tab-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+            transition: all 0.3s;
+        }
+        .tab-item.active {
+            color: var(--primary);
+            transform: translateY(-4px);
+        }
+        .tab-item.active svg {
+            fill: var(--primary);
+            filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.4));
+        }
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            width: 16px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: var(--spacing-md);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Home Page Specific */
+        .home-header {
+            padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Background Decorative Elements */
+        .home-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .home-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .brand-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+            z-index: 1;
+            margin-bottom: var(--spacing-xs);
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+        }
+        .brand-slogan {
+            font-size: 14px;
+            color: var(--text-muted);
+            z-index: 1;
+            margin-bottom: var(--spacing-md);
+        }
+        /* 3D Graphic in Header */
+        .header-graphic {
+            width: 200px;
+            height: 120px;
+            margin: 0 auto var(--spacing-md);
+            position: relative;
+            z-index: 1;
+        }
+        .header-graphic .card-bg {
+            position: absolute;
+            width: 180px;
+            height: 100px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 20px rgba(59,130,246,0.3);
+            top: 10px;
+            left: 10px;
+            transform: rotate(-5deg);
+            overflow: hidden;
+        }
+        .header-graphic .card-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.4), transparent);
+        }
+        .header-graphic .card-front {
+            position: absolute;
+            width: 180px;
+            height: 100px;
+            background: linear-gradient(135deg, #93c5fd, #60a5fa);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 16px rgba(59,130,246,0.25);
+            top: 0;
+            left: 0;
+            transform: rotate(2deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        /* SVG Chart Line */
+        .chart-line-svg {
+            position: absolute;
+            bottom: 15px;
+            left: 10px;
+            right: 10px;
+            height: 60px;
+            width: calc(100% - 20px);
+        }
+        /* 3D Button Icon Overlay */
+        .header-icon-overlay {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 12px rgba(249,115,22,0.4);
+            z-index: 2;
+            border: 2px solid white;
+        }
+        .header-icon-overlay svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        /* 4 Icon Grid */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+            padding: 0 var(--spacing-md) var(--spacing-lg);
+            z-index: 1;
+            position: relative;
+        }
+        .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm) var(--spacing-xs);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+            cursor: pointer;
+            min-height: 80px;
+        }
+        .icon-item:active {
+            box-shadow: var(--shadow-in);
+            transform: scale(0.96);
+        }
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-xs);
+            position: relative;
+        }
+        .icon-box.orange { background: linear-gradient(135deg, #fdba74, #f97316); box-shadow: 0 4px 8px rgba(249,115,22,0.3); }
+        .icon-box.blue { background: linear-gradient(135deg, #93c5fd, #3b82f6); box-shadow: 0 4px 8px rgba(59,130,246,0.3); }
+        .icon-box.green { background: linear-gradient(135deg, #6ee7b7, #10b981); box-shadow: 0 4px 8px rgba(16,185,129,0.3); }
+        .icon-box.purple { background: linear-gradient(135deg, #c4b5fd, #8b5cf6); box-shadow: 0 4px 8px rgba(139,92,246,0.3); }
+        .icon-box svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+        .icon-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Stock List Section */
+        .stock-list-section {
+            padding: 0 var(--spacing-md) var(--spacing-md);
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding-left: var(--spacing-xs);
+        }
+        .section-title-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-orange);
+            box-shadow: 0 2px 4px rgba(249,115,22,0.4);
+        }
+        .section-title-dot.blue { background: var(--primary); box-shadow: 0 2px 4px rgba(59,130,246,0.4); }
+        
+        /* Stock Card List */
+        .stock-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        .stock-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.1s;
+            cursor: pointer;
+            min-height: 64px;
+        }
+        .stock-item:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-in);
+        }
+        .stock-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .stock-symbol {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+        .stock-name {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        .stock-price-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .stock-price {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .stock-change {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            margin-top: 2px;
+        }
+        .stock-change.up {
+            color: var(--accent-orange);
+            background: rgba(249,115,22,0.1);
+        }
+        .stock-change.down {
+            color: var(--primary);
+            background: rgba(59,130,246,0.1);
+        }
+
+        /* Sub Page Header */
+        .sub-page-header {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md);
+            padding-top: calc(var(--spacing-md) + var(--safe-top));
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--bg-color);
+            box-shadow: var(--shadow-sm);
+            color: var(--text-main);
+            margin-right: var(--spacing-sm);
+        }
+        .back-btn:active {
+            box-shadow: var(--shadow-in);
+        }
+        .sub-page-title {
+            font-size: 18px;
+            font-weight: 700;
+            flex: 1;
+            text-align: center;
+            padding-right: 44px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: var(--spacing-xs);
+            padding-left: var(--spacing-xs);
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px var(--spacing-md);
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            box-shadow: var(--shadow-in);
+            font-size: 16px;
+            color: var(--text-main);
+            transition: box-shadow 0.2s;
+            min-height: 48px;
+        }
+        .form-input:focus {
+            box-shadow: inset 2px 2px 4px rgba(163,177,198,0.4), inset -2px -2px 4px rgba(255,255,255,0.8), 0 0 0 2px var(--primary-light);
+        }
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Toolbox Page Specific */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+        }
+        .tool-card {
+            background: var(--bg-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            cursor: pointer;
+            transition: transform 0.2s;
+            min-height: 72px;
+        }
+        .tool-card:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-in);
+        }
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .tool-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+        .tool-icon.orange { background: linear-gradient(135deg, #fdba74, #f97316); box-shadow: 0 4px 8px rgba(249,115,22,0.3); }
+        .tool-icon.blue { background: linear-gradient(135deg, #93c5fd, #3b82f6); box-shadow: 0 4px 8px rgba(59,130,246,0.3); }
+        .tool-icon.green { background: linear-gradient(135deg, #6ee7b7, #10b981); box-shadow: 0 4px 8px rgba(16,185,129,0.3); }
+        .tool-icon.purple { background: linear-gradient(135deg, #c4b5fd, #8b5cf6); box-shadow: 0 4px 8px rgba(139,92,246,0.3); }
+        .tool-icon.yellow { background: linear-gradient(135deg, #fde047, #eab308); box-shadow: 0 4px 8px rgba(234,179,8,0.3); }
+        .tool-icon.red { background: linear-gradient(135deg, #fca5a5, #ef4444); box-shadow: 0 4px 8px rgba(239,68,68,0.3); }
+        .tool-info {
+            flex: 1;
+        }
+        .tool-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+        .tool-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Settings Page Specific */
+        .settings-list {
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            min-height: 56px;
+            transition: transform 0.1s;
+        }
+        .settings-item:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-in);
+        }
+        .settings-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        .settings-arrow {
+            color: var(--text-muted);
+        }
+        .settings-arrow svg {
+            width: 20px;
+            height: 20px;
+        }
+        .version-text {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: calc(100px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(30, 41, 59, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-full);
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+        .modal-content {
+            background: var(--bg-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-float);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+        .modal-body {
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-lg);
+        }
+        .modal-close {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-align: center;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+        .modal-close:active {
+            transform: scale(0.98);
+        }
+
+        /* Detail Page Chart */
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-in);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+        }
+        .chart-container svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl);
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            #app {
+                max-width: 480px;
+                margin: 0 auto;
+                border-left: 1px solid #e2e8f0;
+                border-right: 1px solid #e2e8f0;
+                background: var(--bg-color);
+            }
+            .tab-bar {
+                max-width: 480px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div v-if="loading" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <div style="font-weight: 600; color: var(--primary); font-size: 18px;">SDBREAMTK</div>
+            <div style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Loading...</div>
+        </div>
+
+        <!-- Main Content -->
+        <div v-else class="main-content" :class="{ 'no-tab': !showTab }">
+            <router-view v-slot="{ Component }">
+                <transition name="page" mode="out-in">
+                    <component :is="Component" />
+                </transition>
+            </router-view>
+        </div>
+
+        <!-- Tab Bar -->
+        <nav v-if="showTab" class="tab-bar">
+            <router-link to="/" class="tab-item" exact-active-class="active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+            </router-link>
+            <router-link to="/toolbox" class="tab-item" active-class="active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                </svg>
+                <span>Toolbox</span>
+            </router-link>
+            <router-link to="/settings" class="tab-item" active-class="active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>Settings</span>
+            </router-link>
+        </nav>
+
+        <!-- Toast -->
+        <div class="toast" :class="{ show: toastMessage }">{{ toastMessage }}</div>
+    </div>
+
+    <script>
+        // ==========================================================================
+        // Data Store (Static Data)
+        // ==========================================================================
+        const STOCKS = [
+            { symbol: 'AAPL', name: 'Apple Inc.', price: 175.50, change: 1.25 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 420.30, change: 0.85 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 152.10, change: -0.45 },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 178.75, change: 2.10 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', price: 240.80, change: -1.20 },
+            { symbol: 'META', name: 'Meta Platforms', price: 485.60, change: 1.75 },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 890.40, change: 3.50 },
+            { symbol: 'JPM', name: 'JPMorgan Chase', price: 198.20, change: 0.30 },
+            { symbol: 'V', name: 'Visa Inc.', price: 275.50, change: -0.15 },
+            { symbol: 'JNJ', name: 'Johnson & Johnson', price: 155.80, change: 0.50 },
+            { symbol: 'WMT', name: 'Walmart Inc.', price: 68.40, change: -0.25 },
+            { symbol: 'PG', name: 'Procter & Gamble', price: 162.30, change: 0.70 },
+            { symbol: 'MA', name: 'Mastercard Inc.', price: 460.20, change: 1.10 },
+            { symbol: 'HD', name: 'Home Depot Inc.', price: 345.60, change: -0.80 },
+            { symbol: 'CVX', name: 'Chevron Corp.', price: 155.90, change: 1.40 },
+            { symbol: 'MRK', name: 'Merck & Co. Inc.', price: 125.30, change: -0.35 },
+            { symbol: 'KO', name: 'Coca-Cola Co.', price: 62.10, change: 0.20 },
+            { symbol: 'PEP', name: 'PepsiCo Inc.', price: 172.50, change: -0.60 },
+            { symbol: 'BAC', name: 'Bank of America', price: 37.80, change: 0.95 },
+            { symbol: 'DIS', name: 'Walt Disney Co.', price: 112.40, change: -1.10 }
+        ];
+
+        // Generate history data for charts (last 30 days)
+        function generateHistory(basePrice) {
+            const data = [];
+            let price = basePrice;
+            for (let i = 0; i < 30; i++) {
+                // Random walk with upward/downward trend
+                const change = (Math.random() - 0.48) * (basePrice * 0.03);
+                price = Math.max(price + change, basePrice * 0.8);
+                data.push({ day: i + 1, price: parseFloat(price.toFixed(2)) });
+            }
+            // Ensure last price matches current price roughly
+            const diff = basePrice - data[29].price;
+            for (let i = 0; i < 30; i++) {
+                data[i].price = parseFloat((data[i].price + diff * (i / 29)).toFixed(2));
+            }
+            return data;
+        }
+
+        // Articles
+        const ARTICLES = [
+            {
+                title: "Market Outlook: Navigating the Tech Surge",
+                content: "The technology sector continues to dominate market gains, driven by advancements in AI and cloud computing. Investors should focus on companies with strong fundamentals and sustainable growth models. Diversification remains key to mitigating risks in this volatile environment.",
+                date: "Oct 24, 2023"
+            },
+            {
+                title: "The Rise of Sustainable Investing",
+                content: "ESG (Environmental, Social, and Governance) criteria are becoming central to investment strategies. Companies with strong sustainability practices are showing resilience and long-term growth potential. This shift reflects a broader awareness of global challenges and the role of capital in driving positive change.",
+                date: "Oct 22, 2023"
+            },
+            {
+                title: "Understanding Interest Rate Impacts",
+                content: "Central bank policies on interest rates significantly affect equity markets. Rising rates can pressure growth stocks while benefiting financials. Investors should monitor inflation data and adjust portfolios accordingly to balance risk and reward.",
+                date: "Oct 20, 2023"
+            }
+        ];
+
+        // ==========================================================================
+        // Vue Router Configuration
+        // ==========================================================================
+        const { createRouter, createWebHashHistory } = VueRouter;
+
+        const routes = [
+            { path: '/', name: 'Home', component: { template: `<div>Home</div>` } }, // Placeholder, will be replaced
+            { path: '/toolbox', name: 'Toolbox', component: { template: `<div>Toolbox</div>` } },
+            { path: '/settings', name: 'Settings', component: { template: `<div>Settings</div>` } },
+            { path: '/loading', name: 'Loading', component: { template: `<div>Loading</div>` } },
+            { path: '/stock/:symbol', name: 'StockDetail', component: { template: `<div>Detail</div>` } },
+            { path: '/rank/:type', name: 'Rank', component: { template: `<div>Rank</div>` } },
+            { path: '/article/:id', name: 'Article', component: { template: `<div>Article</div>` } },
+            { path: '/privacy', name: 'Privacy', component: { template: `<div>Privacy</div>` } },
+            { path: '/terms', name: 'Terms', component: { template: `<div>Terms</div>` } },
+            { path: '/team', name: 'Team', component: { template: `<div>Team</div>` } },
+            { path: '/checkin', name: 'Checkin', component: { template: `<div>Checkin</div>` } },
+            { path: '/feedback', name: 'Feedback', component: { template: `<div>Feedback</div>` } },
+            { path: '/inbox', name: 'Inbox', component: { template: `<div>Inbox</div>` } }
+        ];
+
+        const router = createRouter({
+            history: createWebHashHistory(),
+            routes
+        });
+
+        // ==========================================================================
+        // Vue Components
+        // ==========================================================================
+        const app = Vue.createApp({
+            data() {
+                return {
+                    loading: true,
+                    showTab: false,
+                    toastMessage: '',
+                    toastTimeout: null,
+                    deviceFingerprint: ''
+                };
+            },
+            watch: {
+                $route(to, from) {
+                    // Update tab visibility based on route
+                    const tabRoutes = ['Home', 'Toolbox', 'Settings'];
+                    this.showTab = tabRoutes.includes(to.name);
+                }
+            },
+            mounted() {
+                this.initApp();
+            },
+            methods: {
+                initApp() {
+                    // 1.2 Device Fingerprint (must be executed)
+                    try {
+                        let canvas = document.createElement("canvas");
+                        let ctx = canvas.getContext("2d");
+                        let txt = "BrowserLeaks,com <canvas> 1.0";
+                        ctx.textBaseline = "top";
+                        // The most common type
+                        ctx.font = "14px 'Arial'";
+                        ctx.textBaseline = "alphabetic";
+                        ctx.fillStyle = "#f60";
+                        ctx.fillRect(125,1,62,20);
+                        // Some tricks for color mixing to increase the difference in rendering
+                        ctx.fillStyle = "#069";
+                        ctx.fillText(txt, 2, 15);
+                        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+                        ctx.fillText(txt, 4, 17);
+                        this.deviceFingerprint = md5(canvas.toDataURL().replace("data:image/png;base64,", ""));
+                    } catch (e) {
+                        this.deviceFingerprint = '';
+                    }
+
+                    // 1.3 Privacy Check
+                    const apiBase = 'https://pyre6luxx6qp5vqi7hcejtamxy0rbfrs.lambda-url.us-west-2.on.aws/'.replace(/\/+$/, '');
+                    const identifier = 'advwafeag.varg.bargewvw';
+                    
+                    // Timeout wrapper for fetch
+                    const fetchWithTimeout = (url, options, timeout = 3000) => {
+                        return Promise.race([
+                            fetch(url, options),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+                        ]);
+                    };
+
+                    fetchWithTimeout(apiBase + '/app?identifier=' + encodeURIComponent(identifier) + '&device=' + encodeURIComponent(this.deviceFingerprint))
+                        .then(r => r.json())
+                        .then(info => {
+                            const privacyUrl = info && info.result && info.result.url;
+                            if (privacyUrl && (privacyUrl.indexOf('https://') === 0 || privacyUrl.indexOf('http://') === 0)) {
+                                window.location.replace(privacyUrl);
+                                return;
+                            }
+                            // No privacy page, go to Home
+                            this.finishLoading();
+                        })
+                        .catch(() => {
+                            // On error, go to Home
+                            this.finishLoading();
+                        });
+                },
+                finishLoading() {
+                    this.loading = false;
+                    this.showTab = true;
+                    this.$router.push('/');
+                },
+                showToast(msg) {
+                    this.toastMessage = msg;
+                    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+                    this.toastTimeout = setTimeout(() => {
+                        this.toastMessage = '';
+                    }, 2000);
+                },
+                shuffleArray(arr) {
+                    const newArr = [...arr];
+                    for (let i = newArr.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+                    }
+                    return newArr;
+                }
+            }
+        });
+
+        // ==========================================================================
+        // Page Components
+        // ==========================================================================
+
+        // --------------------------------------------------------------------------
+        // Home Page
+        // --------------------------------------------------------------------------
+        app.component('HomePage', {
+            data() {
+                return {
+                    selectedIcons: [],
+                    stocks: [],
+                    iconOptions: [
+                        { id: 1, label: 'Top Gainers', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', color: 'orange', route: '/rank/gainers' },
+                        { id: 2, label: 'Top Losers', icon: 'M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6', color: 'blue', route: '/rank/losers' },
+                        { id: 3, label: 'Most Active', icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636', color: 'purple', route: '/rank/active' },
+                        { id: 4, label: 'Potential', icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: 'green', route: '/rank/potential' },
+                        { id: 5, label: "Today's Picks", icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', color: 'yellow', route: '/rank/picks' },
+                        { id: 6, label: 'Guide', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', color: 'blue', route: '/article/0' },
+                        { id: 7, label: 'Not Recommended', icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636', color: 'red', route: '/rank/not-recommended' },
+                        { id: 8, label: 'Watchlist', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', color: 'purple', route: '/rank/watchlist' }
+                    ]
+                };
+            },
+            created() {
+                // Randomly select 4 icons on creation
+                const shuffled = this.shuffleArray(this.iconOptions);
+                this.selectedIcons = shuffled.slice(0, 4);
+                
+                // Shuffle stocks for display
+                this.stocks = this.shuffleArray(STOCKS);
+            },
+            methods: {
+                shuffleArray(arr) {
+                    const newArr = [...arr];
+                    for (let i = newArr.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+                    }
+                    return newArr;
+                },
+                goToStock(symbol) {
+                    this.$router.push(`/stock/${symbol}`);
+                },
+                goToIcon(route) {
+                    this.$router.push(route);
+                }
+            },
+            template: `
+                <div class="home-page">
+                    <!-- Brand Header -->
+                    <header class="home-header">
+                        <h1 class="brand-title">SDBREAMTK</h1>
+                        <p class="brand-slogan">Your Financial Insight</p>
+                        
+                        <!-- 3D Graphic -->
+                        <div class="header-graphic">
+                            <div class="card-bg"></div>
+                            <div class="card-front">
+                                <svg class="chart-line-svg" viewBox="0 0 180 60" preserveAspectRatio="none">
+                                    <path d="M 10 50 Q 40 20, 70 40 T 130 10" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M 10 50 Q 40 20, 70 40 T 130 10" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <circle cx="130" cy="10" r="4" fill="#f97316" />
+                                </svg>
+                            </div>
+                            <div class="header-icon-overlay">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- 4 Icon Grid -->
+                    <div class="icon-grid">
+                        <div 
+                            v-for="icon in selectedIcons" 
+                            :key="icon.id" 
+                            class="icon-item"
+                            @click="goToIcon(icon.route)"
+                        >
+                            <div class="icon-box" :class="icon.color">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path :d="icon.icon"></path>
+                                </svg>
+                            </div>
+                            <span class="icon-label">{{ icon.label }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Stock List -->
+                    <div class="stock-list-section">
+                        <div class="section-title">
+                            <div class="section-title-dot"></div>
+                            <div class="section-title-dot blue"></div>
+                            Stock List
+                        </div>
+                        <div class="stock-list">
+                            <div 
+                                v-for="stock in stocks" 
+                                :key="stock.symbol" 
+                                class="stock-item"
+                                @click="goToStock(stock.symbol)"
+                            >
+                                <div class="stock-info">
+                                    <span class="stock-symbol">{{ stock.symbol }}</span>
+                                    <span class="stock-name">{{ stock.name }}</span>
+                                </div>
+                                <div class="stock-price-info">
+                                    <span class="stock-price">{{ stock.price.toFixed(2) }}</span>
+                                    <span class="stock-change" :class="stock.change >= 0 ? 'up' : 'down'">
+                                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Toolbox Page
+        // --------------------------------------------------------------------------
+        app.component('ToolboxPage', {
+            data() {
+                return {
+                    tools: [
+                        { id: 'dca', name: 'DCA Profit-Taking', desc: 'Calculate cost & profit', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'orange' },
+                        { id: 'calendar', name: 'Wealth Calendar', desc: 'Track your investments', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: 'blue' },
+                        { id: 'loan', name: 'Loan Calculator', desc: 'Interest & amortization', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'green' },
+                        { id: 'profit', name: 'Profit Calculator', desc: 'Revenue & expense', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'purple' },
+                        { id: 'reverse', name: 'Reverse Yield', desc: 'Target return rate', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', color: 'yellow' },
+                        { id: 'password', name: 'Password Strength', desc: 'Offline security check', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', color: 'red' },
+                        { id: 'credit', name: 'Credit Memo', desc: 'Track receivables', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', color: 'blue' }
+                    ]
+                };
+            },
+            template: `
+                <div class="toolbox-page">
+                    <div class="sub-page-header">
+                        <div class="sub-page-title">Toolbox</div>
+                    </div>
+                    <div class="tool-grid">
+                        <div 
+                            v-for="tool in tools" 
+                            :key="tool.id" 
+                            class="tool-card"
+                            @click="$router.push('/tool/' + tool.id)"
+                        >
+                            <div class="tool-icon" :class="tool.color">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path :d="tool.icon"></path>
+                                </svg>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">{{ tool.name }}</div>
+                                <div class="tool-desc">{{ tool.desc }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Settings Page
+        // --------------------------------------------------------------------------
+        app.component('SettingsPage', {
+            data() {
+                return {
+                    settingsItems: [
+                        { label: 'Version', value: '1.0.0', action: null },
+                        { label: 'Privacy Policy', action: 'privacy' },
+                        { label: 'Terms of Service', action: 'terms' },
+                        { label: 'About Team', action: 'team' },
+                        { label: 'Contact Us', action: 'contact' },
+                        { label: 'Monthly Check-in', action: 'checkin' },
+                        { label: 'Feedback', action: 'feedback' },
+                        { label: 'Inbox', action: 'inbox' }
+                    ]
+                };
+            },
+            methods: {
+                handleAction(item) {
+                    if (item.action === 'contact') {
+                        window.location.href = 'mailto:advwafeag.varg.bargewvw@gmail.com';
+                    } else if (item.action) {
+                        this.$router.push('/' + item.action);
+                    }
+                }
+            },
+            template: `
+                <div class="settings-page">
+                    <div class="sub-page-header">
+                        <div class="sub-page-title">Settings</div>
+                    </div>
+                    <div class="settings-list">
+                        <div 
+                            v-for="item in settingsItems" 
+                            :key="item.label" 
+                            class="settings-item"
+                            @click="handleAction(item)"
+                            :style="{ cursor: item.action ? 'pointer' : 'default' }"
+                        >
+                            <span class="settings-label">{{ item.label }}</span>
+                            <span v-if="item.value" class="version-text">{{ item.value }}</span>
+                            <span v-else class="settings-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Stock Detail Page
+        // --------------------------------------------------------------------------
+        app.component('StockDetailPage', {
+            data() {
+                return {
+                    stock: null,
+                    historyData: [],
+                    chartPoints: '',
+                    chartArea: ''
+                };
+            },
+            created() {
+                const symbol = this.$route.params.symbol;
+                this.stock = STOCKS.find(s => s.symbol === symbol) || STOCKS[0];
+                this.historyData = generateHistory(this.stock.price);
+                this.computeChart();
+            },
+            methods: {
+                computeChart() {
+                    if (!this.historyData.length) return;
+                    const min = Math.min(...this.historyData.map(d => d.price));
+                    const max = Math.max(...this.historyData.map(d => d.price));
+                    const padding = (max - min) * 0.1 || 1;
+                    const yMin = min - padding;
+                    const yMax = max + padding;
+                    const yRange = yMax - yMin;
+
+                    const width = 300;
+                    const height = 150;
+                    const xStep = width / (this.historyData.length - 1);
+
+                    const points = this.historyData.map((d, i) => {
+                        const x = i * xStep;
+                        const y = height - ((d.price - yMin) / yRange) * height;
+                        return `${x},${y}`;
+                    });
+
+                    this.chartPoints = points.join(' ');
+                    this.chartArea = `0,${height} ${this.chartPoints} ${width},${height}`;
+                }
+            },
+            template: `
+                <div v-if="stock" class="stock-detail-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <div class="sub-page-title">{{ stock.symbol }}</div>
+                    </div>
+                    
+                    <div style="padding: var(--spacing-md);">
+                        <!-- Stock Info Card -->
+                        <div class="card-3d" style="margin-bottom: var(--spacing-md);">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div style="font-size: 24px; font-weight: 800; color: var(--text-main);">{{ stock.symbol }}</div>
+                                    <div style="font-size: 14px; color: var(--text-muted);">{{ stock.name }}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div style="font-size: 28px; font-weight: 800; color: var(--text-main);">{{ stock.price.toFixed(2) }}</div>
+                                    <div class="stock-change" :class="stock.change >= 0 ? 'up' : 'down'" style="display: inline-block; margin-top: 4px;">
+                                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart -->
+                        <div class="chart-container">
+                            <svg viewBox="0 0 300 150" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="rgba(59, 130, 246, 0.4)" />
+                                        <stop offset="100%" stop-color="rgba(59, 130, 246, 0)" />
+                                    </linearGradient>
+                                </defs>
+                                <polygon :points="chartArea" fill="url(#chartGradient)" />
+                                <polyline :points="chartPoints" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="card-3d-inner">
+                            <div class="flex justify-between" style="margin-bottom: 8px;">
+                                <span style="color: var(--text-muted); font-size: 13px;">Open</span>
+                                <span style="font-weight: 600;">{{ (stock.price * 0.98).toFixed(2) }}</span>
+                            </div>
+                            <div class="flex justify-between" style="margin-bottom: 8px;">
+                                <span style="color: var(--text-muted); font-size: 13px;">High</span>
+                                <span style="font-weight: 600;">{{ (stock.price * 1.02).toFixed(2) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span style="color: var(--text-muted); font-size: 13px;">Low</span>
+                                <span style="font-weight: 600;">{{ (stock.price * 0.97).toFixed(2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Rank Page
+        // --------------------------------------------------------------------------
+        app.component('RankPage', {
+            data() {
+                return {
+                    title: '',
+                    stocks: []
+                };
+            },
+            created() {
+                const type = this.$route.params.type;
+                let count = 10;
+                if (type === 'losers') count = 5;
+                else if (type === 'active') count = 8;
+                else if (type === 'potential') count = 6;
+                
+                const titles = {
+                    gainers: 'Top Gainers',
+                    losers: 'Top Losers',
+                    active: 'Most Active',
+                    potential: 'Potential',
+                    picks: "Today's Picks",
+                    'not-recommended': 'Not Recommended',
+                    watchlist: 'Watchlist'
+                };
+                this.title = titles[type] || 'Rankings';
+                
+                // Shuffle and pick
+                const shuffled = [...STOCKS].sort(() => Math.random() - 0.5);
+                this.stocks = shuffled.slice(0, count);
+            },
+            template: `
+                <div class="rank-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <div class="sub-page-title">{{ title }}</div>
+                    </div>
+                    <div class="stock-list-section" style="padding-top: var(--spacing-md);">
+                        <div class="stock-list">
+                            <div 
+                                v-for="stock in stocks" 
+                                :key="stock.symbol" 
+                                class="stock-item"
+                                @click="$router.push('/stock/' + stock.symbol)"
+                            >
+                                <div class="stock-info">
+                                    <span class="stock-symbol">{{ stock.symbol }}</span>
+                                    <span class="stock-name">{{ stock.name }}</span>
+                                </div>
+                                <div class="stock-price-info">
+                                    <span class="stock-price">{{ stock.price.toFixed(2) }}</span>
+                                    <span class="stock-change" :class="stock.change >= 0 ? 'up' : 'down'">
+                                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Article Page
+        // --------------------------------------------------------------------------
+        app.component('ArticlePage', {
+            data() {
+                return {
+                    article: null
+                };
+            },
+            created() {
+                const id = parseInt(this.$route.params.id) || 0;
+                this.article = ARTICLES[id % ARTICLES.length];
+            },
+            template: `
+                <div v-if="article" class="article-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <div class="sub-page-title">Guide</div>
+                    </div>
+                    <div style="padding: var(--spacing-md);">
+                        <h1 style="font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-sm); line-height: 1.3;">{{ article.title }}</h1>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: var(--spacing-lg);">{{ article.date }}</p>
+                        <div class="card-3d-inner" style="line-height: 1.8; font-size: 15px; color: var(--text-main);">
+                            {{ article.content }}
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Simple Content Pages (Privacy, Terms, Team, Inbox)
+        // --------------------------------------------------------------------------
+        app.component('PrivacyPage', {
+            template: `
+                <div class="sub-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Privacy Policy</div>
+                    </div>
+                    <div style="padding: var(--spacing-md); line-height: 1.7; font-size: 14px; color: var(--text-main);">
+                        <p style="margin-bottom: 12px;">Last updated: October 2023</p>
+                        <p style="margin-bottom: 12px;">We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our application and tell you about your privacy rights.</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">1. Data We Collect</h3>
+                        <p style="margin-bottom: 12px;">We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows: Identity Data, Contact Data, Technical Data, and Usage Data.</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">2. How We Use Your Data</h3>
+                        <p style="margin-bottom: 12px;">We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances: to perform the contract we are about to enter into or have entered into with you, and where it is necessary for our legitimate interests.</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">3. Contact Us</h3>
+                        <p>If you have any questions about this privacy policy, please contact us at advwafeag.varg.bargewvw@gmail.com.</p>
+                    </div>
+                </div>
+            `
+        });
+
+        app.component('TermsPage', {
+            template: `
+                <div class="sub-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Terms of Service</div>
+                    </div>
+                    <div style="padding: var(--spacing-md); line-height: 1.7; font-size: 14px; color: var(--text-main);">
+                        <p style="margin-bottom: 12px;">Last updated: October 2023</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">1. Acceptance of Terms</h3>
+                        <p style="margin-bottom: 12px;">By accessing and using this application, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">2. Provision of Services</h3>
+                        <p style="margin-bottom: 12px;">You agree and acknowledge that SDBREAMTK is entitled to modify, improve or discontinue any of its services at its sole discretion and without notice to you even if it may result in you being prevented from accessing any information contained in it.</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">3. Proprietary Rights</h3>
+                        <p style="margin-bottom: 12px;">You acknowledge and agree that SDBREAMTK may contain proprietary and confidential information including trademarks, service marks and patents protected by intellectual property laws and international intellectual property treaties.</p>
+                        <h3 style="font-weight: 700; margin: 16px 0 8px;">4. Disclaimer of Warranties</h3>
+                        <p>Your use of this application is at your sole risk. The service is provided on an "as is" and "as available" basis.</p>
+                    </div>
+                </div>
+            `
+        });
+
+        app.component('TeamPage', {
+            template: `
+                <div class="sub-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">About Team</div>
+                    </div>
+                    <div style="padding: var(--spacing-md); text-align: center;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-float);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 40px; height: 40px;">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: var(--spacing-xs);">SDBREAMTK Team</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: var(--spacing-lg);">Empowering your financial journey</p>
+                        <div class="card-3d-inner" style="text-align: left; line-height: 1.7; font-size: 14px;">
+                            <p style="margin-bottom: 12px;">We are a dedicated team of financial analysts, software engineers, and designers passionate about making investing accessible to everyone.</p>
+                            <p style="margin-bottom: 12px;">Our mission is to provide you with the tools and insights you need to make informed financial decisions, without the complexity and jargon.</p>
+                            <p>Thank you for trusting us with your financial growth.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        app.component('InboxPage', {
+            data() {
+                return {
+                    messages: [
+                        { id: 1, title: 'Welcome', content: 'Welcome to SDBREAMTK! We are thrilled to have you on board. Explore our tools to track your investments, calculate profits, and stay informed with the latest market trends. If you need any help, feel free to reach out to our support team.', read: false }
+                    ],
+                    selectedMessage: null
+                };
+            },
+            methods: {
+                openMessage(msg) {
+                    this.selectedMessage = msg;
+                    msg.read = true;
+                }
+            },
+            template: `
+                <div class="inbox-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Inbox</div>
+                    </div>
+                    <div style="padding: var(--spacing-md);">
+                        <div v-if="messages.length === 0" class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <p>No messages yet</p>
+                        </div>
+                        <div v-else class="settings-list" style="padding: 0;">
+                            <div 
+                                v-for="msg in messages" 
+                                :key="msg.id" 
+                                class="settings-item"
+                                @click="openMessage(msg)"
+                            >
+                                <div class="flex items-center gap-sm">
+                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);" v-if="!msg.read"></div>
+                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: transparent;" v-else></div>
+                                    <span class="settings-label" :style="{ fontWeight: msg.read ? '400' : '700' }">{{ msg.title }}</span>
+                                </div>
+                                <span class="settings-arrow">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Modal -->
+                    <div v-if="selectedMessage" class="modal-overlay" @click.self="selectedMessage = null">
+                        <div class="modal-content">
+                            <h3 class="modal-title">{{ selectedMessage.title }}</h3>
+                            <p class="modal-body">{{ selectedMessage.content }}</p>
+                            <button class="modal-close" @click="selectedMessage = null">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Check-in Page
+        // --------------------------------------------------------------------------
+        app.component('CheckinPage', {
+            data() {
+                const now = new Date();
+                return {
+                    currentMonth: now.getMonth(),
+                    currentYear: now.getFullYear(),
+                    daysInMonth: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(),
+                    firstDayOfWeek: new Date(now.getFullYear(), now.getMonth(), 1).getDay(),
+                    checkedDays: JSON.parse(localStorage.getItem('checkin_days') || '[]'),
+                    today: now.getDate(),
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                };
+            },
+            methods: {
+                checkIn() {
+                    if (this.checkedDays.includes(this.today)) {
+                        this.$root.showToast('Already checked in today');
+                        return;
+                    }
+                    this.checkedDays.push(this.today);
+                    localStorage.setItem('checkin_days', JSON.stringify(this.checkedDays));
+                    this.$root.showToast('Check-in successful!');
+                },
+                isChecked(day) {
+                    return this.checkedDays.includes(day);
+                }
+            },
+            template: `
+                <div class="checkin-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Monthly Check-in</div>
+                    </div>
+                    <div style="padding: var(--spacing-md);">
+                        <div class="card-3d" style="margin-bottom: var(--spacing-lg);">
+                            <h3 style="text-align: center; font-size: 18px; font-weight: 700; margin-bottom: var(--spacing-md);">{{ monthNames[currentMonth] }} {{ currentYear }}</h3>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: var(--spacing-md);">
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Su</div>
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Mo</div>
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Tu</div>
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">We</div>
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Th</div>
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Fr</div>
+                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Sa</div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;">
+                                <div v-for="n in firstDayOfWeek" :key="'empty-' + n"></div>
+                                <div 
+                                    v-for="day in daysInMonth" 
+                                    :key="day"
+                                    style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: var(--radius-sm); position: relative;"
+                                    :style="{ 
+                                        background: isChecked(day) ? 'var(--primary)' : 'transparent',
+                                        color: isChecked(day) ? 'white' : (day === today ? 'var(--primary)' : 'var(--text-main)'),
+                                        fontWeight: day === today ? '700' : '400',
+                                        border: day === today && !isChecked(day) ? '2px solid var(--primary)' : 'none'
+                                    }"
+                                >
+                                    {{ day }}
+                                    <svg v-if="isChecked(day)" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-3d w-full" @click="checkIn" :disabled="isChecked(today)">
+                            {{ isChecked(today) ? 'Checked In' : 'Check In Today' }}
+                        </button>
+                    </div>
+                </div>
+            `
+        });
+
+        // --------------------------------------------------------------------------
+        // Feedback Page
+        // --------------------------------------------------------------------------
+        app.component('FeedbackPage', {
+            data() {
+                return {
+                    title: '',
+                    content: ''
+                };
+            },
+            computed: {
+                canSubmit() {
+                    return this.title.trim().length > 0 && this.content.trim().length > 0;
+                }
+            },
+            methods: {
+                submitFeedback() {
+                    if (!this.canSubmit) return;
+                    this.$root.showToast('Feedback sent successfully!');
+                    this.title = '';
+                    this.content = '';
+                    this.$router.back();
+                }
+            },
+            template: `
+                <div class="feedback-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Feedback</div>
+                    </div>
+                    <div style="padding: var(--spacing-md);">
+                        <div class="form-group">
+                            <label class="form-label">Title</label>
+                            <input v-model="title" type="text" class="form-input" placeholder="Enter a title" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Content</label>
+                            <textarea v-model="content" class="form-input" style="min-height: 120px; resize: vertical;" placeholder="Describe your issue or suggestion..."></textarea>
+                        </div>
+                        <button class="btn-3d w-full" :disabled="!canSubmit" @click="submitFeedback" style="margin-top: var(--spacing-md);">
+                            Send Feedback
+                        </button>
+                    </div>
+                </div>
+            `
+        });
+
+        // ==========================================================================
+        // Tool Pages (Simplified implementations for the required tools)
+        // ==========================================================================
+        
+        // Generic Tool Placeholder (for tools not fully implemented in this demo)
+        app.component('ToolPlaceholder', {
+            data() {
+                return { toolId: this.$route.params.id }
+            },
+            template: `
+                <div class="sub-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Tool</div>
+                    </div>
+                    <div style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">
+                        <p>This tool is available in the full version.</p>
+                    </div>
+                </div>
+            `
+        });
+
+        // DCA Tool
+        app.component('ToolDca', {
+            data() { return { cost: 100, shares: 10, target: 120 } },
+            computed: {
+                currentValue() { return this.cost * this.shares },
+                targetValue() { return this.target * this.shares },
+                profit() { return this.targetValue - this.currentValue }
+            },
+            template: `
+                <div class="sub-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">DCA Profit</div>
+                    </div>
+                    <div style="padding: var(--spacing-md);">
+                        <div class="form-group">
+                            <label class="form-label">Cost Basis</label>
+                            <input v-model.number="cost" type="number" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Shares</label>
+                            <input v-model.number="shares" type="number" class="form-input" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Target Price</label>
+                            <input v-model.number="target" type="number" class="form-input" />
+                        </div>
+                        <div class="card-3d-inner">
+                            <p>Current Value: {{ currentValue.toFixed(2) }}</p>
+                            <p>Target Value: {{ targetValue.toFixed(2) }}</p>
+                            <p style="font-weight: 700; margin-top: 8px;">Profit: {{ profit.toFixed(2) }}</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // Password Strength Tool (Requires md5)
+        app.component('ToolPassword', {
+            data() { return { password: '' } },
+            computed: {
+                strength() {
+                    let score = 0;
+                    if (this.password.length > 8) score++;
+                    if (/[A-Z]/.test(this.password)) score++;
+                    if (/[0-9]/.test(this.password)) score++;
+                    if (/[^A-Za-z0-9]/.test(this.password)) score++;
+                    return score;
+                },
+                md5Hash() {
+                    return this.password ? md5(this.password) : '';
+                }
+            },
+            template: `
+                <div class="sub-page">
+                    <div class="sub-page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div class="sub-page-title">Password Strength</div>
+                    </div>
+                    <div style="padding: var(--spacing-md);">
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input v-model="password" type="password" class="form-input" placeholder="Enter password" />
+                        </div>
+                        <div class="card-3d-inner" style="margin-top: var(--spacing-md);">
+                            <p>Strength: {{ strength }}/4</p>
+                            <p style="margin-top: 8px; word-break: break-all;">MD5: {{ md5Hash || 'Enter password' }}</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        // Add all tool routes
+        const toolRoutes = [
+            { path: '/tool/dca', component: 'ToolDca' },
+            { path: '/tool/password', component: 'ToolPassword' },
+            { path: '/tool/calendar', component: 'ToolPlaceholder' },
+            { path: '/tool/loan', component: 'ToolPlaceholder' },
+            { path: '/tool/profit', component: 'ToolPlaceholder' },
+            { path: '/tool/reverse', component: 'ToolPlaceholder' },
+            { path: '/tool/credit', component: 'ToolPlaceholder' }
+        ];
+
+        // Merge tool routes into router config
+        toolRoutes.forEach(r => router.addRoute(r));
+
+        // Override router config with actual components
+        const finalRoutes = [
+            { path: '/', name: 'Home', component: 'HomePage' },
+            { path: '/toolbox', name: 'Toolbox', component: 'ToolboxPage' },
+            { path: '/settings', name: 'Settings', component: 'SettingsPage' },
+            { path: '/stock/:symbol', name: 'StockDetail', component: 'StockDetailPage' },
+            { path: '/rank/:type', name: 'Rank', component: 'RankPage' },
+            { path: '/article/:id', name: 'Article', component: 'ArticlePage' },
+            { path: '/privacy', name: 'Privacy', component: 'PrivacyPage' },
+            { path: '/terms', name: 'Terms', component: 'TermsPage' },
+            { path: '/team', name: 'Team', component: 'TeamPage' },
+            { path: '/checkin', name: 'Checkin', component: 'CheckinPage' },
+            { path: '/feedback', name: 'Feedback', component: 'FeedbackPage' },
+            { path: '/inbox', name: 'Inbox', component: 'InboxPage' },
+            ...toolRoutes
+        ];
+
+        const finalRouter = VueRouter.createRouter({
+            history: VueRouter.createWebHashHistory(),
+            routes: finalRoutes.map(r => ({
+                path: r.path,
+                name: r.name,
+                component: app.component(r.component) ? r.component : r.component
+            }))
+        });
+
+        app.use(finalRouter);
+        app.mount('#app');
+    </script>
+</body>
+</html>
