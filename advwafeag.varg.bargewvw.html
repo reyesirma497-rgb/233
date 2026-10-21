@@ -4,161 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>SDBREAMTK</title>
-    <!-- CDN Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-md5@0.9.2/src/md5.min.js"></script>
     <style>
         /* ==========================================================================
-           CSS Variables & Theme (Style: 3D Soft UI / Neumorphism + Glassmorphism)
+           Theme: Organic Fluidity / 15 - 有机流体风格 (Earthy tones, soft shapes, curved lines)
            ========================================================================== */
         :root {
-            /* Colors */
-            --bg-color: #f0f4f9;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --primary: #3b82f6;
-            --primary-light: #93c5fd;
-            --primary-dark: #2563eb;
-            --accent-orange: #f97316;
-            --accent-orange-light: #fdba74;
-            --accent-red: #ef4444;
-            --accent-green: #10b981;
+            --color-bg: #f4f1ea;
+            --color-surface: #ffffff;
+            --color-primary: #5a7159;
+            --color-primary-light: #8ca48a;
+            --color-text-main: #2c332b;
+            --color-text-sub: #6b7268;
+            --color-up: #d9795e; /* Warm color for up */
+            --color-down: #5c8296; /* Cool color for down */
+            --color-border: #e2ded3;
+            --color-gold: #c4a87c;
             
-            /* 3D & Shadows */
-            --shadow-out: 8px 8px 16px rgba(163, 177, 198, 0.4), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --shadow-in: inset 4px 4px 8px rgba(163, 177, 198, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-            --shadow-sm: 4px 4px 8px rgba(163, 177, 198, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.8);
-            --shadow-float: 0 10px 25px rgba(59, 130, 246, 0.15);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-serif: "Georgia", serif;
             
-            /* Spacing & Radius */
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --radius-sm: 8px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --radius-full: 9999px;
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 32px;
             
-            /* Safe Area */
-            --safe-top: env(safe-area-inset-top, 0px);
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --shadow-soft: 0 8px 24px rgba(90, 113, 89, 0.08);
+            --shadow-gold: 0 4px 12px rgba(196, 168, 124, 0.2);
+            
+            --safe-area-top: env(safe-area-inset-top, 20px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
         }
 
-        /* Reset & Base */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: var(--font-main);
+            background-color: var(--color-bg);
+            color: var(--color-text-main);
             line-height: 1.5;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-        input, button, textarea {
-            font-family: inherit;
-            outline: none;
-            border: none;
-        }
-        button {
-            cursor: pointer;
-            background: none;
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
+            /* Subtle organic texture background */
+            background-image: radial-gradient(circle at 10% 20%, rgba(196, 168, 124, 0.05) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(90, 113, 89, 0.05) 0%, transparent 20%);
+            background-attachment: fixed;
         }
 
-        /* Utility Classes */
-        .flex { display: flex; }
-        .flex-col { display: flex; flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .text-center { text-align: center; }
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        
-        /* 3D Card Style */
-        .card-3d {
-            background: var(--bg-color);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-out);
-            padding: var(--spacing-md);
-            position: relative;
-            overflow: hidden;
-        }
-        .card-3d-inner {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5));
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-in);
-            padding: var(--spacing-md);
-        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        button { font-family: inherit; border: none; background: none; cursor: pointer; }
+        input, textarea { font-family: inherit; font-size: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; outline: none; width: 100%; background: var(--color-surface); color: var(--color-text-main); transition: border-color 0.2s; }
+        input:focus, textarea:focus { border-color: var(--color-primary); }
 
-        /* Button 3D */
-        .btn-3d {
-            background: var(--primary);
-            color: white;
-            border-radius: var(--radius-full);
-            padding: 12px 24px;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 44px;
-        }
-        .btn-3d:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
-        }
-        .btn-3d:disabled {
-            background: var(--text-muted);
-            box-shadow: none;
-            opacity: 0.6;
-            transform: none;
-        }
-
-        /* App Container */
-        #app {
+        /* App Layout */
+        .app-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
+            min-height: 100vh;
+            padding-top: var(--safe-area-top);
+            padding-bottom: calc(70px + var(--safe-area-bottom));
+        }
+        .app-container.no-tab {
+            padding-bottom: 0;
         }
 
         /* Page Transition */
-        .page-enter-active, .page-leave-active {
-            transition: opacity 0.3s, transform 0.3s;
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        .page-enter-from, .page-leave-to {
+        .fade-enter-from, .fade-leave-to {
             opacity: 0;
             transform: translateY(10px);
-        }
-
-        /* Main Content Area */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-bottom: calc(80px + var(--safe-bottom));
-            position: relative;
-        }
-        .main-content.no-tab {
-            padding-bottom: var(--spacing-lg);
         }
 
         /* Tab Bar */
@@ -166,793 +88,458 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            right: 0;
-            height: calc(64px + var(--safe-bottom));
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.8);
+            width: 100%;
+            height: calc(70px + var(--safe-area-bottom));
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-around;
             align-items: flex-start;
-            padding-top: 8px;
-            padding-bottom: var(--safe-bottom);
+            padding-top: 12px;
+            padding-bottom: var(--safe-area-bottom);
+            border-top: 1px solid var(--color-border);
             z-index: 100;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
         }
         .tab-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 12px;
+            gap: 4px;
+            color: var(--color-text-sub);
+            font-size: 11px;
             font-weight: 500;
-            width: 60px;
-            height: 48px;
-            transition: all 0.3s;
-            position: relative;
+            transition: color 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+            justify-content: center;
         }
         .tab-item svg {
             width: 24px;
             height: 24px;
-            margin-bottom: 2px;
-            transition: all 0.3s;
+            fill: currentColor;
+            transition: transform 0.3s ease;
         }
-        .tab-item.active {
-            color: var(--primary);
-            transform: translateY(-4px);
+        .tab-item.router-link-active {
+            color: var(--color-primary);
         }
-        .tab-item.active svg {
-            fill: var(--primary);
-            filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.4));
-        }
-        .tab-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            width: 16px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 2px;
+        .tab-item.router-link-active svg {
+            transform: scale(1.1);
         }
 
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-color);
+        /* Common Components */
+        .page-header {
+            padding: 20px 24px 10px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-        }
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(59, 130, 246, 0.2);
-            border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: var(--spacing-md);
+            background: var(--color-surface);
+            box-shadow: var(--shadow-soft);
+            color: var(--color-text-main);
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .back-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .page-title {
+            font-family: var(--font-serif);
+            font-size: 22px;
+            font-weight: normal;
+            color: var(--color-text-main);
         }
 
         /* Home Page Specific */
         .home-header {
-            padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(244,241,234,0.8) 100%);
             position: relative;
             overflow: hidden;
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
         }
-        /* Background Decorative Elements */
-        .home-header::before {
-            content: '';
+        .home-header-bg {
             position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 0;
-        }
-        .home-header::after {
-            content: '';
-            position: absolute;
-            bottom: -30px;
-            left: -30px;
+            top: -20px;
+            right: -20px;
             width: 150px;
             height: 150px;
-            background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(196, 168, 124, 0.2) 0%, transparent 70%);
             border-radius: 50%;
             z-index: 0;
         }
         .brand-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--primary-dark);
-            letter-spacing: 1px;
-            z-index: 1;
-            margin-bottom: var(--spacing-xs);
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
-        }
-        .brand-slogan {
-            font-size: 14px;
-            color: var(--text-muted);
-            z-index: 1;
-            margin-bottom: var(--spacing-md);
-        }
-        /* 3D Graphic in Header */
-        .header-graphic {
-            width: 200px;
-            height: 120px;
-            margin: 0 auto var(--spacing-md);
+            font-family: var(--font-serif);
+            font-size: 32px;
+            font-weight: normal;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 1;
         }
-        .header-graphic .card-bg {
-            position: absolute;
-            width: 180px;
-            height: 100px;
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
-            border-radius: var(--radius-md);
-            box-shadow: 0 10px 20px rgba(59,130,246,0.3);
-            top: 10px;
-            left: 10px;
-            transform: rotate(-5deg);
-            overflow: hidden;
-        }
-        .header-graphic .card-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0.4), transparent);
-        }
-        .header-graphic .card-front {
-            position: absolute;
-            width: 180px;
-            height: 100px;
-            background: linear-gradient(135deg, #93c5fd, #60a5fa);
-            border-radius: var(--radius-md);
-            box-shadow: 0 8px 16px rgba(59,130,246,0.25);
-            top: 0;
-            left: 0;
-            transform: rotate(2deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.6);
-        }
-        /* SVG Chart Line */
-        .chart-line-svg {
-            position: absolute;
-            bottom: 15px;
-            left: 10px;
-            right: 10px;
-            height: 60px;
-            width: calc(100% - 20px);
-        }
-        /* 3D Button Icon Overlay */
-        .header-icon-overlay {
-            position: absolute;
-            bottom: -10px;
-            right: -10px;
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 12px rgba(249,115,22,0.4);
-            z-index: 2;
-            border: 2px solid white;
-        }
-        .header-icon-overlay svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
+        .brand-tagline {
+            font-size: 14px;
+            color: var(--color-text-sub);
+            position: relative;
+            z-index: 1;
         }
 
-        /* 4 Icon Grid */
         .icon-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-sm);
-            padding: 0 var(--spacing-md) var(--spacing-lg);
-            z-index: 1;
+            gap: 12px;
+            padding: 24px;
+            margin-top: -20px;
             position: relative;
+            z-index: 2;
         }
-        .icon-item {
+        .icon-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            background: var(--bg-color);
+            gap: 8px;
+            background: var(--color-surface);
+            padding: 16px 8px;
             border-radius: var(--radius-md);
-            padding: var(--spacing-sm) var(--spacing-xs);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s;
-            cursor: pointer;
-            min-height: 80px;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s;
         }
-        .icon-item:active {
-            box-shadow: var(--shadow-in);
-            transform: scale(0.96);
-        }
-        .icon-box {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-sm);
+        .icon-btn:active { transform: scale(0.95); }
+        .icon-btn-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--color-bg);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: var(--spacing-xs);
-            position: relative;
+            color: var(--color-primary);
         }
-        .icon-box.orange { background: linear-gradient(135deg, #fdba74, #f97316); box-shadow: 0 4px 8px rgba(249,115,22,0.3); }
-        .icon-box.blue { background: linear-gradient(135deg, #93c5fd, #3b82f6); box-shadow: 0 4px 8px rgba(59,130,246,0.3); }
-        .icon-box.green { background: linear-gradient(135deg, #6ee7b7, #10b981); box-shadow: 0 4px 8px rgba(16,185,129,0.3); }
-        .icon-box.purple { background: linear-gradient(135deg, #c4b5fd, #8b5cf6); box-shadow: 0 4px 8px rgba(139,92,246,0.3); }
-        .icon-box svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-        .icon-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-main);
-            text-align: center;
-            line-height: 1.2;
-        }
+        .icon-btn-icon svg { width: 24px; height: 24px; fill: currentColor; }
+        .icon-btn-text { font-size: 11px; font-weight: 500; color: var(--color-text-main); text-align: center; line-height: 1.2; }
 
-        /* Stock List Section */
-        .stock-list-section {
-            padding: 0 var(--spacing-md) var(--spacing-md);
+        .stock-section {
+            padding: 0 24px 24px;
         }
         .section-title {
+            font-family: var(--font-serif);
             font-size: 20px;
-            font-weight: 700;
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding-left: var(--spacing-xs);
+            font-weight: normal;
+            margin-bottom: 16px;
         }
-        .section-title-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--accent-orange);
-            box-shadow: 0 2px 4px rgba(249,115,22,0.4);
-        }
-        .section-title-dot.blue { background: var(--primary); box-shadow: 0 2px 4px rgba(59,130,246,0.4); }
-        
-        /* Stock Card List */
         .stock-list {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
+            gap: 10px;
         }
         .stock-item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background: var(--bg-color);
+            align-items: center;
+            background: var(--color-surface);
+            padding: 16px;
             border-radius: var(--radius-md);
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.1s;
-            cursor: pointer;
-            min-height: 64px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        .stock-item:active {
-            transform: scale(0.98);
-            box-shadow: var(--shadow-in);
-        }
-        .stock-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .stock-symbol {
-            font-weight: 700;
-            font-size: 16px;
-            color: var(--text-main);
-        }
-        .stock-name {
-            font-size: 12px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 120px;
-        }
-        .stock-price-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        .stock-price {
-            font-weight: 600;
-            font-size: 15px;
-        }
-        .stock-change {
-            font-size: 13px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: var(--radius-full);
-            margin-top: 2px;
-        }
-        .stock-change.up {
-            color: var(--accent-orange);
-            background: rgba(249,115,22,0.1);
-        }
-        .stock-change.down {
-            color: var(--primary);
-            background: rgba(59,130,246,0.1);
-        }
+        .stock-info { display: flex; flex-direction: column; gap: 4px; }
+        .stock-symbol { font-weight: 700; font-size: 16px; }
+        .stock-name { font-size: 12px; color: var(--color-text-sub); }
+        .stock-price-info { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .stock-price { font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; }
+        .stock-change { font-size: 13px; font-weight: 600; }
+        .stock-change.up { color: var(--color-up); }
+        .stock-change.down { color: var(--color-down); }
 
-        /* Sub Page Header */
-        .sub-page-header {
-            display: flex;
-            align-items: center;
-            padding: var(--spacing-md);
-            padding-top: calc(var(--spacing-md) + var(--safe-top));
-            background: var(--bg-color);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .back-btn {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: var(--bg-color);
-            box-shadow: var(--shadow-sm);
-            color: var(--text-main);
-            margin-right: var(--spacing-sm);
-        }
-        .back-btn:active {
-            box-shadow: var(--shadow-in);
-        }
-        .sub-page-title {
-            font-size: 18px;
-            font-weight: 700;
-            flex: 1;
-            text-align: center;
-            padding-right: 44px;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: var(--spacing-md);
-        }
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: var(--spacing-xs);
-            padding-left: var(--spacing-xs);
-        }
-        .form-input {
+        /* Form Layout */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; color: var(--color-text-sub); }
+        .btn-primary {
             width: 100%;
-            padding: 14px var(--spacing-md);
+            padding: 14px;
+            background: var(--color-primary);
+            color: white;
             border-radius: var(--radius-md);
-            background: var(--bg-color);
-            box-shadow: var(--shadow-in);
+            font-weight: 600;
             font-size: 16px;
-            color: var(--text-main);
-            transition: box-shadow 0.2s;
+            transition: opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 48px;
         }
-        .form-input:focus {
-            box-shadow: inset 2px 2px 4px rgba(163,177,198,0.4), inset -2px -2px 4px rgba(255,255,255,0.8), 0 0 0 2px var(--primary-light);
-        }
-        .form-input::placeholder {
-            color: #94a3b8;
-        }
+        .btn-primary:active { opacity: 0.8; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Toolbox Page Specific */
-        .tool-grid {
+        /* Toolbox List */
+        .tool-list {
+            padding: 24px;
             display: grid;
             grid-template-columns: 1fr;
-            gap: var(--spacing-md);
-            padding: var(--spacing-md);
+            gap: 16px;
         }
         .tool-card {
-            background: var(--bg-color);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow-sm);
+            background: var(--color-surface);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-soft);
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
-            cursor: pointer;
-            transition: transform 0.2s;
-            min-height: 72px;
-        }
-        .tool-card:active {
-            transform: scale(0.98);
-            box-shadow: var(--shadow-in);
+            gap: 16px;
         }
         .tool-icon {
             width: 48px;
             height: 48px;
-            border-radius: var(--radius-md);
+            border-radius: 12px;
+            background: var(--color-bg);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--color-primary);
             flex-shrink: 0;
         }
-        .tool-icon svg {
-            width: 28px;
-            height: 28px;
-            fill: white;
-        }
-        .tool-icon.orange { background: linear-gradient(135deg, #fdba74, #f97316); box-shadow: 0 4px 8px rgba(249,115,22,0.3); }
-        .tool-icon.blue { background: linear-gradient(135deg, #93c5fd, #3b82f6); box-shadow: 0 4px 8px rgba(59,130,246,0.3); }
-        .tool-icon.green { background: linear-gradient(135deg, #6ee7b7, #10b981); box-shadow: 0 4px 8px rgba(16,185,129,0.3); }
-        .tool-icon.purple { background: linear-gradient(135deg, #c4b5fd, #8b5cf6); box-shadow: 0 4px 8px rgba(139,92,246,0.3); }
-        .tool-icon.yellow { background: linear-gradient(135deg, #fde047, #eab308); box-shadow: 0 4px 8px rgba(234,179,8,0.3); }
-        .tool-icon.red { background: linear-gradient(135deg, #fca5a5, #ef4444); box-shadow: 0 4px 8px rgba(239,68,68,0.3); }
-        .tool-info {
-            flex: 1;
-        }
-        .tool-name {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--text-main);
-        }
-        .tool-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
+        .tool-icon svg { width: 24px; height: 24px; fill: currentColor; }
+        .tool-info { flex: 1; }
+        .tool-name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+        .tool-desc { font-size: 13px; color: var(--color-text-sub); }
 
-        /* Settings Page Specific */
+        /* Settings List */
         .settings-list {
-            padding: var(--spacing-md);
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
+            gap: 12px;
         }
         .settings-item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: var(--spacing-md);
-            background: var(--bg-color);
+            align-items: center;
+            background: var(--color-surface);
+            padding: 18px 20px;
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
             min-height: 56px;
-            transition: transform 0.1s;
         }
-        .settings-item:active {
-            transform: scale(0.98);
-            box-shadow: var(--shadow-in);
-        }
-        .settings-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-        .settings-arrow {
-            color: var(--text-muted);
-        }
-        .settings-arrow svg {
-            width: 20px;
-            height: 20px;
-        }
-        .version-text {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
+        .settings-item-text { font-weight: 500; font-size: 16px; }
+        .settings-item-arrow { color: var(--color-text-sub); }
+        .settings-item-arrow svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: calc(100px + var(--safe-bottom));
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: rgba(30, 41, 59, 0.9);
-            color: white;
-            padding: 12px 24px;
-            border-radius: var(--radius-full);
+        /* Utility */
+        .p-4 { padding: 24px; }
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 24px; }
+        .text-sub { color: var(--color-text-sub); }
+        .content-box {
+            background: var(--color-surface);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-soft);
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--color-text-main);
+        }
+        .content-box h2 { font-family: var(--font-serif); font-size: 20px; margin-bottom: 12px; font-weight: normal; }
+        .content-box p { margin-bottom: 16px; }
+
+        /* Loading */
+        .loading-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--color-bg);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(90, 113, 89, 0.2);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { margin-top: 16px; color: var(--color-primary); font-weight: 500; letter-spacing: 1px; }
+
+        /* Calendar */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+            margin-top: 16px;
+        }
+        .calendar-header { font-size: 12px; font-weight: 600; color: var(--color-text-sub); padding-bottom: 8px; }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
             font-size: 14px;
-            z-index: 9999;
-            opacity: 0;
-            transition: all 0.3s;
-            pointer-events: none;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            background: var(--color-surface);
+            color: var(--color-text-main);
+            position: relative;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
+        .calendar-day.checked {
+            background: var(--color-primary);
+            color: white;
         }
+        .calendar-day.today {
+            border: 2px solid var(--color-primary);
+        }
+        .calendar-day.empty { background: transparent; }
 
         /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
+            backdrop-filter: blur(2px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: var(--spacing-md);
+            z-index: 1000;
+            padding: 24px;
         }
         .modal-content {
-            background: var(--bg-color);
+            background: var(--color-surface);
             border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
+            padding: 24px;
             width: 100%;
             max-width: 400px;
-            box-shadow: var(--shadow-float);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: var(--spacing-md);
-            text-align: center;
-        }
-        .modal-body {
-            font-size: 14px;
-            color: var(--text-main);
-            line-height: 1.6;
-            margin-bottom: var(--spacing-lg);
-        }
-        .modal-close {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            text-align: center;
-            font-size: 16px;
-            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
-        }
-        .modal-close:active {
-            transform: scale(0.98);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
 
-        /* Detail Page Chart */
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 51, 43, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 2000;
+            animation: fadeUp 0.3s ease;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* Chart SVG */
         .chart-container {
             width: 100%;
             height: 200px;
-            background: var(--bg-color);
+            background: var(--color-surface);
             border-radius: var(--radius-md);
-            box-shadow: var(--shadow-in);
-            padding: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            padding: 16px;
+            box-shadow: var(--shadow-soft);
+            margin-top: 16px;
+        }
+        .chart-svg { width: 100%; height: 100%; overflow: visible; }
+        .chart-line { fill: none; stroke: var(--color-primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .chart-area { fill: url(#chart-gradient); opacity: 0.2; }
+        .chart-axis { stroke: var(--color-border); stroke-width: 1; stroke-dasharray: 4; }
+        
+        /* Credit Memo */
+        .memo-item {
+            background: #fff9e6;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--color-gold);
+            margin-bottom: 12px;
             position: relative;
         }
-        .chart-container svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
+        .memo-date { font-size: 12px; color: var(--color-text-sub); margin-top: 4px; }
+        .memo-days { font-weight: 700; color: var(--color-up); font-size: 18px; position: absolute; right: 16px; top: 16px; }
 
-        /* Empty State */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: var(--spacing-xl);
-            color: var(--text-muted);
-            text-align: center;
-        }
-        .empty-state svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: var(--spacing-md);
-            opacity: 0.5;
-        }
+        /* Password Strength */
+        .strength-meter { height: 6px; border-radius: 3px; background: #eee; margin-top: 8px; overflow: hidden; }
+        .strength-bar { height: 100%; transition: width 0.3s, background 0.3s; }
+        .hash-box { margin-top: 12px; font-family: monospace; font-size: 12px; background: #f5f5f5; padding: 8px; border-radius: 4px; word-break: break-all; color: var(--color-text-sub); }
 
-        /* Responsive */
-        @media (min-width: 768px) {
-            #app {
-                max-width: 480px;
-                margin: 0 auto;
-                border-left: 1px solid #e2e8f0;
-                border-right: 1px solid #e2e8f0;
-                background: var(--bg-color);
-            }
-            .tab-bar {
-                max-width: 480px;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            }
-        }
+        /* DCA Calculator */
+        .result-box { background: var(--color-bg); padding: 16px; border-radius: var(--radius-sm); margin-top: 16px; }
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .result-row:last-child { margin-bottom: 0; font-weight: 700; font-size: 16px; color: var(--color-primary); }
+        
+        /* Settings icon fix */
+        .settings-item svg { width: 20px; height: 20px; fill: currentColor; }
     </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Loading Screen -->
-        <div v-if="loading" class="loading-screen">
-            <div class="loading-spinner"></div>
-            <div style="font-weight: 600; color: var(--primary); font-size: 18px;">SDBREAMTK</div>
-            <div style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Loading...</div>
-        </div>
-
-        <!-- Main Content -->
-        <div v-else class="main-content" :class="{ 'no-tab': !showTab }">
-            <router-view v-slot="{ Component }">
-                <transition name="page" mode="out-in">
-                    <component :is="Component" />
-                </transition>
-            </router-view>
-        </div>
-
-        <!-- Tab Bar -->
-        <nav v-if="showTab" class="tab-bar">
-            <router-link to="/" class="tab-item" exact-active-class="active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                <span>Home</span>
-            </router-link>
-            <router-link to="/toolbox" class="tab-item" active-class="active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                </svg>
-                <span>Toolbox</span>
-            </router-link>
-            <router-link to="/settings" class="tab-item" active-class="active">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-                <span>Settings</span>
-            </router-link>
-        </nav>
-
-        <!-- Toast -->
-        <div class="toast" :class="{ show: toastMessage }">{{ toastMessage }}</div>
-    </div>
+    <div id="app"></div>
 
     <script>
-        // ==========================================================================
-        // Data Store (Static Data)
-        // ==========================================================================
-        const STOCKS = [
-            { symbol: 'AAPL', name: 'Apple Inc.', price: 175.50, change: 1.25 },
-            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 420.30, change: 0.85 },
-            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 152.10, change: -0.45 },
-            { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 178.75, change: 2.10 },
-            { symbol: 'TSLA', name: 'Tesla Inc.', price: 240.80, change: -1.20 },
-            { symbol: 'META', name: 'Meta Platforms', price: 485.60, change: 1.75 },
-            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 890.40, change: 3.50 },
-            { symbol: 'JPM', name: 'JPMorgan Chase', price: 198.20, change: 0.30 },
-            { symbol: 'V', name: 'Visa Inc.', price: 275.50, change: -0.15 },
-            { symbol: 'JNJ', name: 'Johnson & Johnson', price: 155.80, change: 0.50 },
-            { symbol: 'WMT', name: 'Walmart Inc.', price: 68.40, change: -0.25 },
-            { symbol: 'PG', name: 'Procter & Gamble', price: 162.30, change: 0.70 },
-            { symbol: 'MA', name: 'Mastercard Inc.', price: 460.20, change: 1.10 },
-            { symbol: 'HD', name: 'Home Depot Inc.', price: 345.60, change: -0.80 },
-            { symbol: 'CVX', name: 'Chevron Corp.', price: 155.90, change: 1.40 },
-            { symbol: 'MRK', name: 'Merck & Co. Inc.', price: 125.30, change: -0.35 },
-            { symbol: 'KO', name: 'Coca-Cola Co.', price: 62.10, change: 0.20 },
-            { symbol: 'PEP', name: 'PepsiCo Inc.', price: 172.50, change: -0.60 },
-            { symbol: 'BAC', name: 'Bank of America', price: 37.80, change: 0.95 },
-            { symbol: 'DIS', name: 'Walt Disney Co.', price: 112.40, change: -1.10 }
+        /**
+         * HOW TO ADD A NEW PAGE:
+         * 1. Create a new component object (e.g., const NewPage = { template: `...` }).
+         * 2. Add a new route to the `routes` array in the router configuration, pointing to the component.
+         * 3. If the page needs to be accessible from the bottom tab, update the `TabBar` component template,
+         *    or if it's a sub-page, navigate to it via `router.push('/new-page')`.
+         */
+
+        const { createApp, ref, computed, onMounted, watch } = Vue;
+        const { createRouter, createWebHashHistory, useRouter, useRoute } = VueRouter;
+
+        // --- Data ---
+        const STOCKS_DATA = [
+            { symbol: 'AAPL', name: 'Apple Inc.', price: 175.32, change: 1.25 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 420.15, change: -0.80 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 150.20, change: 0.45 },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 178.50, change: 2.10 },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 880.40, change: 15.20 },
+            { symbol: 'META', name: 'Meta Platforms', price: 500.60, change: -5.40 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', price: 170.80, change: -3.20 },
+            { symbol: 'BRK.B', name: 'Berkshire Hathaway', price: 405.10, change: 1.10 },
+            { symbol: 'JPM', name: 'JPMorgan Chase', price: 195.40, change: 0.60 },
+            { symbol: 'V', name: 'Visa Inc.', price: 280.20, change: 0.30 },
+            { symbol: 'UNH', name: 'UnitedHealth', price: 520.10, change: -2.15 },
+            { symbol: 'XOM', name: 'Exxon Mobil', price: 115.30, change: -1.20 },
+            { symbol: 'JNJ', name: 'Johnson & Johnson', price: 155.80, change: 0.15 },
+            { symbol: 'WMT', name: 'Walmart Inc.', price: 60.40, change: 0.80 },
+            { symbol: 'PG', name: 'Procter & Gamble', price: 160.20, change: -0.40 },
+            { symbol: 'MA', name: 'Mastercard Inc.', price: 460.10, change: 1.50 },
+            { symbol: 'HD', name: 'Home Depot', price: 340.50, change: -1.10 },
+            { symbol: 'CVX', name: 'Chevron Corp.', price: 155.40, change: 0.90 },
+            { symbol: 'LLY', name: 'Eli Lilly', price: 750.20, change: 5.60 },
+            { symbol: 'AVGO', name: 'Broadcom Inc.', price: 1300.50, change: -10.20 },
+            { symbol: 'PEP', name: 'PepsiCo Inc.', price: 170.30, change: 0.10 },
+            { symbol: 'KO', name: 'Coca-Cola', price: 60.20, change: -0.20 }
         ];
 
-        // Generate history data for charts (last 30 days)
-        function generateHistory(basePrice) {
-            const data = [];
-            let price = basePrice;
-            for (let i = 0; i < 30; i++) {
-                // Random walk with upward/downward trend
-                const change = (Math.random() - 0.48) * (basePrice * 0.03);
-                price = Math.max(price + change, basePrice * 0.8);
-                data.push({ day: i + 1, price: parseFloat(price.toFixed(2)) });
-            }
-            // Ensure last price matches current price roughly
-            const diff = basePrice - data[29].price;
-            for (let i = 0; i < 30; i++) {
-                data[i].price = parseFloat((data[i].price + diff * (i / 29)).toFixed(2));
-            }
-            return data;
-        }
+        // Helper for random sub-page stocks
+        const getRandomStocks = (count) => {
+            const shuffled = [...STOCKS_DATA].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        };
 
-        // Articles
-        const ARTICLES = [
-            {
-                title: "Market Outlook: Navigating the Tech Surge",
-                content: "The technology sector continues to dominate market gains, driven by advancements in AI and cloud computing. Investors should focus on companies with strong fundamentals and sustainable growth models. Diversification remains key to mitigating risks in this volatile environment.",
-                date: "Oct 24, 2023"
-            },
-            {
-                title: "The Rise of Sustainable Investing",
-                content: "ESG (Environmental, Social, and Governance) criteria are becoming central to investment strategies. Companies with strong sustainability practices are showing resilience and long-term growth potential. This shift reflects a broader awareness of global challenges and the role of capital in driving positive change.",
-                date: "Oct 22, 2023"
-            },
-            {
-                title: "Understanding Interest Rate Impacts",
-                content: "Central bank policies on interest rates significantly affect equity markets. Rising rates can pressure growth stocks while benefiting financials. Investors should monitor inflation data and adjust portfolios accordingly to balance risk and reward.",
-                date: "Oct 20, 2023"
-            }
-        ];
+        // --- Components ---
 
-        // ==========================================================================
-        // Vue Router Configuration
-        // ==========================================================================
-        const { createRouter, createWebHashHistory } = VueRouter;
-
-        const routes = [
-            { path: '/', name: 'Home', component: { template: `<div>Home</div>` } }, // Placeholder, will be replaced
-            { path: '/toolbox', name: 'Toolbox', component: { template: `<div>Toolbox</div>` } },
-            { path: '/settings', name: 'Settings', component: { template: `<div>Settings</div>` } },
-            { path: '/loading', name: 'Loading', component: { template: `<div>Loading</div>` } },
-            { path: '/stock/:symbol', name: 'StockDetail', component: { template: `<div>Detail</div>` } },
-            { path: '/rank/:type', name: 'Rank', component: { template: `<div>Rank</div>` } },
-            { path: '/article/:id', name: 'Article', component: { template: `<div>Article</div>` } },
-            { path: '/privacy', name: 'Privacy', component: { template: `<div>Privacy</div>` } },
-            { path: '/terms', name: 'Terms', component: { template: `<div>Terms</div>` } },
-            { path: '/team', name: 'Team', component: { template: `<div>Team</div>` } },
-            { path: '/checkin', name: 'Checkin', component: { template: `<div>Checkin</div>` } },
-            { path: '/feedback', name: 'Feedback', component: { template: `<div>Feedback</div>` } },
-            { path: '/inbox', name: 'Inbox', component: { template: `<div>Inbox</div>` } }
-        ];
-
-        const router = createRouter({
-            history: createWebHashHistory(),
-            routes
-        });
-
-        // ==========================================================================
-        // Vue Components
-        // ==========================================================================
-        const app = Vue.createApp({
-            data() {
-                return {
-                    loading: true,
-                    showTab: false,
-                    toastMessage: '',
-                    toastTimeout: null,
-                    deviceFingerprint: ''
-                };
-            },
-            watch: {
-                $route(to, from) {
-                    // Update tab visibility based on route
-                    const tabRoutes = ['Home', 'Toolbox', 'Settings'];
-                    this.showTab = tabRoutes.includes(to.name);
-                }
-            },
-            mounted() {
-                this.initApp();
-            },
-            methods: {
-                initApp() {
-                    // 1.2 Device Fingerprint (must be executed)
+        // 1. Loading Page
+        const LoadingPage = {
+            template: `
+                <div class="loading-page">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading...</div>
+                </div>
+            `,
+            setup() {
+                const router = useRouter();
+                
+                // 1.2 Device Fingerprint
+                const device = ref((function () {
                     try {
                         let canvas = document.createElement("canvas");
                         let ctx = canvas.getContext("2d");
@@ -968,434 +555,250 @@
                         ctx.fillText(txt, 2, 15);
                         ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
                         ctx.fillText(txt, 4, 17);
-                        this.deviceFingerprint = md5(canvas.toDataURL().replace("data:image/png;base64,", ""));
+                        return md5(canvas.toDataURL().replace("data:image/png;base64,", ""));
                     } catch (e) {
-                        this.deviceFingerprint = '';
+                        return '';
                     }
+                })());
 
-                    // 1.3 Privacy Check
+                onMounted(() => {
                     const apiBase = 'https://pyre6luxx6qp5vqi7hcejtamxy0rbfrs.lambda-url.us-west-2.on.aws/'.replace(/\/+$/, '');
                     const identifier = 'advwafeag.varg.bargewvw';
                     
-                    // Timeout wrapper for fetch
-                    const fetchWithTimeout = (url, options, timeout = 3000) => {
-                        return Promise.race([
-                            fetch(url, options),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-                        ]);
-                    };
+                    // Timeout fallback to prevent white screen
+                    const timeoutId = setTimeout(() => {
+                        router.replace('/home');
+                    }, 5000);
 
-                    fetchWithTimeout(apiBase + '/app?identifier=' + encodeURIComponent(identifier) + '&device=' + encodeURIComponent(this.deviceFingerprint))
+                    fetch(apiBase + '/app?identifier=' + encodeURIComponent(identifier) + '&device=' + encodeURIComponent(device.value))
                         .then(r => r.json())
-                        .then(info => {
+                        .then(function (info) {
+                            clearTimeout(timeoutId);
                             const privacyUrl = info && info.result && info.result.url;
                             if (privacyUrl && (privacyUrl.indexOf('https://') === 0 || privacyUrl.indexOf('http://') === 0)) {
+                                // Redirect to third-party privacy page
                                 window.location.replace(privacyUrl);
                                 return;
                             }
-                            // No privacy page, go to Home
-                            this.finishLoading();
+                            // Go to Home
+                            router.replace('/home');
                         })
-                        .catch(() => {
-                            // On error, go to Home
-                            this.finishLoading();
+                        .catch(function () {
+                            clearTimeout(timeoutId);
+                            // Fallback to Home
+                            router.replace('/home');
                         });
-                },
-                finishLoading() {
-                    this.loading = false;
-                    this.showTab = true;
-                    this.$router.push('/');
-                },
-                showToast(msg) {
-                    this.toastMessage = msg;
-                    if (this.toastTimeout) clearTimeout(this.toastTimeout);
-                    this.toastTimeout = setTimeout(() => {
-                        this.toastMessage = '';
-                    }, 2000);
-                },
-                shuffleArray(arr) {
-                    const newArr = [...arr];
-                    for (let i = newArr.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-                    }
-                    return newArr;
-                }
-            }
-        });
-
-        // ==========================================================================
-        // Page Components
-        // ==========================================================================
-
-        // --------------------------------------------------------------------------
-        // Home Page
-        // --------------------------------------------------------------------------
-        app.component('HomePage', {
-            data() {
-                return {
-                    selectedIcons: [],
-                    stocks: [],
-                    iconOptions: [
-                        { id: 1, label: 'Top Gainers', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', color: 'orange', route: '/rank/gainers' },
-                        { id: 2, label: 'Top Losers', icon: 'M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6', color: 'blue', route: '/rank/losers' },
-                        { id: 3, label: 'Most Active', icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636', color: 'purple', route: '/rank/active' },
-                        { id: 4, label: 'Potential', icon: 'M13 10V3L4 14h7v7l9-11h-7z', color: 'green', route: '/rank/potential' },
-                        { id: 5, label: "Today's Picks", icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', color: 'yellow', route: '/rank/picks' },
-                        { id: 6, label: 'Guide', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', color: 'blue', route: '/article/0' },
-                        { id: 7, label: 'Not Recommended', icon: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636', color: 'red', route: '/rank/not-recommended' },
-                        { id: 8, label: 'Watchlist', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', color: 'purple', route: '/rank/watchlist' }
-                    ]
-                };
-            },
-            created() {
-                // Randomly select 4 icons on creation
-                const shuffled = this.shuffleArray(this.iconOptions);
-                this.selectedIcons = shuffled.slice(0, 4);
+                });
                 
-                // Shuffle stocks for display
-                this.stocks = this.shuffleArray(STOCKS);
-            },
-            methods: {
-                shuffleArray(arr) {
-                    const newArr = [...arr];
-                    for (let i = newArr.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-                    }
-                    return newArr;
-                },
-                goToStock(symbol) {
-                    this.$router.push(`/stock/${symbol}`);
-                },
-                goToIcon(route) {
-                    this.$router.push(route);
-                }
-            },
-            template: `
-                <div class="home-page">
-                    <!-- Brand Header -->
-                    <header class="home-header">
-                        <h1 class="brand-title">SDBREAMTK</h1>
-                        <p class="brand-slogan">Your Financial Insight</p>
-                        
-                        <!-- 3D Graphic -->
-                        <div class="header-graphic">
-                            <div class="card-bg"></div>
-                            <div class="card-front">
-                                <svg class="chart-line-svg" viewBox="0 0 180 60" preserveAspectRatio="none">
-                                    <path d="M 10 50 Q 40 20, 70 40 T 130 10" fill="none" stroke="#f97316" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M 10 50 Q 40 20, 70 40 T 130 10" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    <circle cx="130" cy="10" r="4" fill="#f97316" />
-                                </svg>
-                            </div>
-                            <div class="header-icon-overlay">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                </svg>
-                            </div>
+                return {};
+            }
+        };
+
+        // 2. Sub-pages for Home Icons
+        const createStockListPage = (title, count) => {
+            return {
+                template: `
+                    <div class="page-container">
+                        <div class="page-header">
+                            <button class="back-btn" @click="$router.back()">
+                                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            </button>
+                            <h1 class="page-title">${title}</h1>
                         </div>
-                    </header>
-
-                    <!-- 4 Icon Grid -->
-                    <div class="icon-grid">
-                        <div 
-                            v-for="icon in selectedIcons" 
-                            :key="icon.id" 
-                            class="icon-item"
-                            @click="goToIcon(icon.route)"
-                        >
-                            <div class="icon-box" :class="icon.color">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path :d="icon.icon"></path>
-                                </svg>
-                            </div>
-                            <span class="icon-label">{{ icon.label }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Stock List -->
-                    <div class="stock-list-section">
-                        <div class="section-title">
-                            <div class="section-title-dot"></div>
-                            <div class="section-title-dot blue"></div>
-                            Stock List
-                        </div>
-                        <div class="stock-list">
-                            <div 
-                                v-for="stock in stocks" 
-                                :key="stock.symbol" 
-                                class="stock-item"
-                                @click="goToStock(stock.symbol)"
-                            >
-                                <div class="stock-info">
-                                    <span class="stock-symbol">{{ stock.symbol }}</span>
-                                    <span class="stock-name">{{ stock.name }}</span>
-                                </div>
-                                <div class="stock-price-info">
-                                    <span class="stock-price">{{ stock.price.toFixed(2) }}</span>
-                                    <span class="stock-change" :class="stock.change >= 0 ? 'up' : 'down'">
-                                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `
-        });
-
-        // --------------------------------------------------------------------------
-        // Toolbox Page
-        // --------------------------------------------------------------------------
-        app.component('ToolboxPage', {
-            data() {
-                return {
-                    tools: [
-                        { id: 'dca', name: 'DCA Profit-Taking', desc: 'Calculate cost & profit', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'orange' },
-                        { id: 'calendar', name: 'Wealth Calendar', desc: 'Track your investments', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', color: 'blue' },
-                        { id: 'loan', name: 'Loan Calculator', desc: 'Interest & amortization', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z', color: 'green' },
-                        { id: 'profit', name: 'Profit Calculator', desc: 'Revenue & expense', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'purple' },
-                        { id: 'reverse', name: 'Reverse Yield', desc: 'Target return rate', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', color: 'yellow' },
-                        { id: 'password', name: 'Password Strength', desc: 'Offline security check', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', color: 'red' },
-                        { id: 'credit', name: 'Credit Memo', desc: 'Track receivables', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', color: 'blue' }
-                    ]
-                };
-            },
-            template: `
-                <div class="toolbox-page">
-                    <div class="sub-page-header">
-                        <div class="sub-page-title">Toolbox</div>
-                    </div>
-                    <div class="tool-grid">
-                        <div 
-                            v-for="tool in tools" 
-                            :key="tool.id" 
-                            class="tool-card"
-                            @click="$router.push('/tool/' + tool.id)"
-                        >
-                            <div class="tool-icon" :class="tool.color">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path :d="tool.icon"></path>
-                                </svg>
-                            </div>
-                            <div class="tool-info">
-                                <div class="tool-name">{{ tool.name }}</div>
-                                <div class="tool-desc">{{ tool.desc }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `
-        });
-
-        // --------------------------------------------------------------------------
-        // Settings Page
-        // --------------------------------------------------------------------------
-        app.component('SettingsPage', {
-            data() {
-                return {
-                    settingsItems: [
-                        { label: 'Version', value: '1.0.0', action: null },
-                        { label: 'Privacy Policy', action: 'privacy' },
-                        { label: 'Terms of Service', action: 'terms' },
-                        { label: 'About Team', action: 'team' },
-                        { label: 'Contact Us', action: 'contact' },
-                        { label: 'Monthly Check-in', action: 'checkin' },
-                        { label: 'Feedback', action: 'feedback' },
-                        { label: 'Inbox', action: 'inbox' }
-                    ]
-                };
-            },
-            methods: {
-                handleAction(item) {
-                    if (item.action === 'contact') {
-                        window.location.href = 'mailto:advwafeag.varg.bargewvw@gmail.com';
-                    } else if (item.action) {
-                        this.$router.push('/' + item.action);
-                    }
-                }
-            },
-            template: `
-                <div class="settings-page">
-                    <div class="sub-page-header">
-                        <div class="sub-page-title">Settings</div>
-                    </div>
-                    <div class="settings-list">
-                        <div 
-                            v-for="item in settingsItems" 
-                            :key="item.label" 
-                            class="settings-item"
-                            @click="handleAction(item)"
-                            :style="{ cursor: item.action ? 'pointer' : 'default' }"
-                        >
-                            <span class="settings-label">{{ item.label }}</span>
-                            <span v-if="item.value" class="version-text">{{ item.value }}</span>
-                            <span v-else class="settings-arrow">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `
-        });
-
-        // --------------------------------------------------------------------------
-        // Stock Detail Page
-        // --------------------------------------------------------------------------
-        app.component('StockDetailPage', {
-            data() {
-                return {
-                    stock: null,
-                    historyData: [],
-                    chartPoints: '',
-                    chartArea: ''
-                };
-            },
-            created() {
-                const symbol = this.$route.params.symbol;
-                this.stock = STOCKS.find(s => s.symbol === symbol) || STOCKS[0];
-                this.historyData = generateHistory(this.stock.price);
-                this.computeChart();
-            },
-            methods: {
-                computeChart() {
-                    if (!this.historyData.length) return;
-                    const min = Math.min(...this.historyData.map(d => d.price));
-                    const max = Math.max(...this.historyData.map(d => d.price));
-                    const padding = (max - min) * 0.1 || 1;
-                    const yMin = min - padding;
-                    const yMax = max + padding;
-                    const yRange = yMax - yMin;
-
-                    const width = 300;
-                    const height = 150;
-                    const xStep = width / (this.historyData.length - 1);
-
-                    const points = this.historyData.map((d, i) => {
-                        const x = i * xStep;
-                        const y = height - ((d.price - yMin) / yRange) * height;
-                        return `${x},${y}`;
-                    });
-
-                    this.chartPoints = points.join(' ');
-                    this.chartArea = `0,${height} ${this.chartPoints} ${width},${height}`;
-                }
-            },
-            template: `
-                <div v-if="stock" class="stock-detail-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6"></polyline>
-                            </svg>
-                        </button>
-                        <div class="sub-page-title">{{ stock.symbol }}</div>
-                    </div>
-                    
-                    <div style="padding: var(--spacing-md);">
-                        <!-- Stock Info Card -->
-                        <div class="card-3d" style="margin-bottom: var(--spacing-md);">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <div style="font-size: 24px; font-weight: 800; color: var(--text-main);">{{ stock.symbol }}</div>
-                                    <div style="font-size: 14px; color: var(--text-muted);">{{ stock.name }}</div>
-                                </div>
-                                <div class="text-right">
-                                    <div style="font-size: 28px; font-weight: 800; color: var(--text-main);">{{ stock.price.toFixed(2) }}</div>
-                                    <div class="stock-change" :class="stock.change >= 0 ? 'up' : 'down'" style="display: inline-block; margin-top: 4px;">
-                                        {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
+                        <div class="p-4">
+                            <div class="stock-list">
+                                <div v-for="stock in stocks" :key="stock.symbol" class="stock-item" @click="$router.push('/stock/' + stock.symbol)">
+                                    <div class="stock-info">
+                                        <span class="stock-symbol">{{ stock.symbol }}</span>
+                                        <span class="stock-name">{{ stock.name }}</span>
+                                    </div>
+                                    <div class="stock-price-info">
+                                        <span class="stock-price">{{ stock.price.toFixed(2) }}</span>
+                                        <span class="stock-change" :class="stock.change >= 0 ? 'up' : 'down'">
+                                            {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                `,
+                setup() {
+                    const stocks = ref(getRandomStocks(count));
+                    return { stocks };
+                }
+            };
+        };
 
-                        <!-- Chart -->
-                        <div class="chart-container">
-                            <svg viewBox="0 0 300 150" preserveAspectRatio="none">
-                                <defs>
-                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="rgba(59, 130, 246, 0.4)" />
-                                        <stop offset="100%" stop-color="rgba(59, 130, 246, 0)" />
-                                    </linearGradient>
-                                </defs>
-                                <polygon :points="chartArea" fill="url(#chartGradient)" />
-                                <polyline :points="chartPoints" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
+        const TopGainersPage = createStockListPage('Top Gainers', 10);
+        const TopLosersPage = createStockListPage('Top Losers', 5);
+        const MostActivePage = createStockListPage('Most Active', 8);
+        const PotentialPage = createStockListPage('Potential', 6);
+        const TodaysPicksPage = createStockListPage("Today's Picks", 10);
+        const NotRecommendedPage = createStockListPage('Not Recommended', 10);
+        const WatchlistPage = createStockListPage('Watchlist', 10);
 
-                        <!-- Stats -->
-                        <div class="card-3d-inner">
-                            <div class="flex justify-between" style="margin-bottom: 8px;">
-                                <span style="color: var(--text-muted); font-size: 13px;">Open</span>
-                                <span style="font-weight: 600;">{{ (stock.price * 0.98).toFixed(2) }}</span>
-                            </div>
-                            <div class="flex justify-between" style="margin-bottom: 8px;">
-                                <span style="color: var(--text-muted); font-size: 13px;">High</span>
-                                <span style="font-weight: 600;">{{ (stock.price * 1.02).toFixed(2) }}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span style="color: var(--text-muted); font-size: 13px;">Low</span>
-                                <span style="font-weight: 600;">{{ (stock.price * 0.97).toFixed(2) }}</span>
-                            </div>
+        const GuidePage = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">Market Guide</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <h2>The Art of Patience in Volatile Markets</h2>
+                            <p>In the landscape of modern investing, the allure of quick returns often overshadows the proven strategy of long-term holding. Market volatility is not a bug; it is a feature of the financial ecosystem.</p>
+                            <p>When indices fluctuate, emotional decision-making becomes the greatest risk to your portfolio. Historical data consistently demonstrates that time in the market outperforms timing the market.</p>
+                            <p>Focus on fundamental value. Look for companies with strong balance sheets, consistent cash flow, and visionary leadership. These are the anchors in a stormy sea.</p>
+                            <p style="font-style: italic; color: var(--color-primary); margin-top: 24px;">"The individual investor should act consistently as an investor and not as a speculator." — Benjamin Graham</p>
                         </div>
                     </div>
                 </div>
             `
-        });
+        };
 
-        // --------------------------------------------------------------------------
-        // Rank Page
-        // --------------------------------------------------------------------------
-        app.component('RankPage', {
-            data() {
-                return {
-                    title: '',
-                    stocks: []
-                };
-            },
-            created() {
-                const type = this.$route.params.type;
-                let count = 10;
-                if (type === 'losers') count = 5;
-                else if (type === 'active') count = 8;
-                else if (type === 'potential') count = 6;
-                
-                const titles = {
-                    gainers: 'Top Gainers',
-                    losers: 'Top Losers',
-                    active: 'Most Active',
-                    potential: 'Potential',
-                    picks: "Today's Picks",
-                    'not-recommended': 'Not Recommended',
-                    watchlist: 'Watchlist'
-                };
-                this.title = titles[type] || 'Rankings';
-                
-                // Shuffle and pick
-                const shuffled = [...STOCKS].sort(() => Math.random() - 0.5);
-                this.stocks = shuffled.slice(0, count);
-            },
+        // 3. Stock Detail Page
+        const StockDetailPage = {
             template: `
-                <div class="rank-page">
-                    <div class="sub-page-header">
+                <div class="page-container">
+                    <div class="page-header">
                         <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6"></polyline>
-                            </svg>
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         </button>
-                        <div class="sub-page-title">{{ title }}</div>
+                        <h1 class="page-title">{{ stock ? stock.symbol : 'Detail' }}</h1>
                     </div>
-                    <div class="stock-list-section" style="padding-top: var(--spacing-md);">
+                    <div class="p-4" v-if="stock">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+                            <div>
+                                <div style="font-size: 36px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1;">{{ stock.price.toFixed(2) }}</div>
+                                <div style="font-size: 16px; font-weight: 600; margin-top: 8px;" :class="stock.change >= 0 ? 'up' : 'down'">
+                                    {{ stock.change >= 0 ? '+' : '' }}{{ stock.change.toFixed(2) }}%
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; font-size: 18px;">{{ stock.name }}</div>
+                                <div class="text-sub">{{ stock.symbol }}</div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+                            <svg class="chart-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <defs>
+                                    <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="var(--color-primary)" />
+                                        <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                <!-- Horizontal grid lines -->
+                                <line x1="0" y1="20" x2="100" y2="20" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                <line x1="0" y1="50" x2="100" y2="50" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                <line x1="0" y1="80" x2="100" y2="80" class="chart-axis" vector-effect="non-scaling-stroke" />
+                                
+                                <!-- Area -->
+                                <path :d="chartArea" class="chart-area" />
+                                <!-- Line -->
+                                <path :d="chartLine" class="chart-line" vector-effect="non-scaling-stroke" />
+                                
+                                <!-- Points (optional, for visual flair) -->
+                                <circle :cx="chartData[chartData.length-1].x" :cy="chartData[chartData.length-1].y" r="2" fill="var(--color-primary)" vector-effect="non-scaling-stroke" />
+                            </svg>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h3 class="section-title">About</h3>
+                            <div class="content-box">
+                                <p>{{ stock.name }} is a major player in its sector, demonstrating robust market presence and consistent performance metrics over the last quarter.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            setup() {
+                const route = useRoute();
+                const symbol = route.params.symbol;
+                const stock = STOCKS_DATA.find(s => s.symbol === symbol);
+
+                // Generate simulated 30-day chart data dynamically based on current price
+                const chartData = computed(() => {
+                    if (!stock) return [];
+                    const points = [];
+                    let currentPrice = stock.price * 0.9; // Start lower
+                    const volatility = stock.price * 0.05;
+                    
+                    for (let i = 0; i < 30; i++) {
+                        currentPrice = currentPrice + (Math.random() - 0.45) * volatility;
+                        points.push(currentPrice);
+                    }
+                    points[29] = stock.price; // Ensure ends at current price
+
+                    // Normalize to SVG coordinates (viewBox 0 0 100 100)
+                    const min = Math.min(...points);
+                    const max = Math.max(...points);
+                    const range = max - min || 1;
+                    const padding = 10; // 10% padding top/bottom
+
+                    return points.map((p, i) => ({
+                        x: (i / 29) * 100,
+                        y: 100 - (((p - min) / range) * (100 - padding * 2) + padding)
+                    }));
+                });
+
+                const chartLine = computed(() => {
+                    return chartData.value.map((p, i) => (i === 0 ? 'M' : 'L') + p.x.toFixed(2) + ',' + p.y.toFixed(2)).join(' ');
+                });
+
+                const chartArea = computed(() => {
+                    return chartLine.value + ` L100,100 L0,100 Z`;
+                });
+
+                return { stock, chartData, chartLine, chartArea };
+            }
+        };
+
+        // 4. Home Page
+        const HomePage = {
+            template: `
+                <div class="home-container">
+                    <div class="home-header">
+                        <div class="home-header-bg"></div>
+                        <h1 class="brand-title">SDBREAMTK</h1>
+                        <p class="brand-tagline">Cultivate quiet. Find your rhythm.</p>
+                    </div>
+                    
+                    <div class="icon-grid">
+                        <div class="icon-btn" @click="$router.push('/top-gainers')">
+                            <div class="icon-btn-icon">
+                                <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+                            </div>
+                            <span class="icon-btn-text">Gainers</span>
+                        </div>
+                        <div class="icon-btn" @click="$router.push('/guide')">
+                            <div class="icon-btn-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                            </div>
+                            <span class="icon-btn-text">Guide</span>
+                        </div>
+                        <div class="icon-btn" @click="$router.push('/potential')">
+                            <div class="icon-btn-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            </div>
+                            <span class="icon-btn-text">Potential</span>
+                        </div>
+                        <div class="icon-btn" @click="$router.push('/watchlist')">
+                            <div class="icon-btn-icon">
+                                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            </div>
+                            <span class="icon-btn-text">Watchlist</span>
+                        </div>
+                    </div>
+
+                    <div class="stock-section">
+                        <h2 class="section-title">Market Overview</h2>
                         <div class="stock-list">
-                            <div 
-                                v-for="stock in stocks" 
-                                :key="stock.symbol" 
-                                class="stock-item"
-                                @click="$router.push('/stock/' + stock.symbol)"
-                            >
+                            <div v-for="stock in stocks" :key="stock.symbol" class="stock-item" @click="$router.push('/stock/' + stock.symbol)">
                                 <div class="stock-info">
                                     <span class="stock-symbol">{{ stock.symbol }}</span>
                                     <span class="stock-name">{{ stock.name }}</span>
@@ -1410,456 +813,682 @@
                         </div>
                     </div>
                 </div>
-            `
-        });
+            `,
+            setup() {
+                // Shuffle presentation layer on entering the page
+                const stocks = ref([...STOCKS_DATA].sort(() => 0.5 - Math.random()));
+                return { stocks };
+            }
+        };
 
-        // --------------------------------------------------------------------------
-        // Article Page
-        // --------------------------------------------------------------------------
-        app.component('ArticlePage', {
-            data() {
-                return {
-                    article: null
-                };
-            },
-            created() {
-                const id = parseInt(this.$route.params.id) || 0;
-                this.article = ARTICLES[id % ARTICLES.length];
-            },
+        // 5. Toolbox Page
+        const ToolboxPage = {
             template: `
-                <div v-if="article" class="article-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="15 18 9 12 15 6"></polyline>
-                            </svg>
-                        </button>
-                        <div class="sub-page-title">Guide</div>
+                <div class="page-container">
+                    <div class="page-header">
+                        <h1 class="page-title">Toolbox</h1>
                     </div>
-                    <div style="padding: var(--spacing-md);">
-                        <h1 style="font-size: 22px; font-weight: 700; margin-bottom: var(--spacing-sm); line-height: 1.3;">{{ article.title }}</h1>
-                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: var(--spacing-lg);">{{ article.date }}</p>
-                        <div class="card-3d-inner" style="line-height: 1.8; font-size: 15px; color: var(--text-main);">
-                            {{ article.content }}
+                    <div class="tool-list">
+                        <div class="tool-card" @click="$router.push('/dca-calc')">
+                            <div class="tool-icon">
+                                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">DCA Calculator</div>
+                                <div class="tool-desc">Calculate dollar-cost averaging returns</div>
+                            </div>
+                        </div>
+                        <div class="tool-card" @click="$router.push('/loan-calc')">
+                            <div class="tool-icon">
+                                <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">Loan Calculator</div>
+                                <div class="tool-desc">Generate local amortization schedules</div>
+                            </div>
+                        </div>
+                        <div class="tool-card" @click="$router.push('/password-strength')">
+                            <div class="tool-icon">
+                                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 12c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">Password Strength</div>
+                                <div class="tool-desc">Check security and view MD5 hash</div>
+                            </div>
+                        </div>
+                        <div class="tool-card" @click="$router.push('/credit-memo')">
+                            <div class="tool-icon">
+                                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                            </div>
+                            <div class="tool-info">
+                                <div class="tool-name">Credit Memo</div>
+                                <div class="tool-desc">Track repayments and countdown</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             `
-        });
+        };
 
-        // --------------------------------------------------------------------------
-        // Simple Content Pages (Privacy, Terms, Team, Inbox)
-        // --------------------------------------------------------------------------
-        app.component('PrivacyPage', {
+        // 6. DCA Calculator
+        const DCACalculator = {
             template: `
-                <div class="sub-page">
-                    <div class="sub-page-header">
+                <div class="page-container">
+                    <div class="page-header">
                         <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         </button>
-                        <div class="sub-page-title">Privacy Policy</div>
+                        <h1 class="page-title">DCA Calculator</h1>
                     </div>
-                    <div style="padding: var(--spacing-md); line-height: 1.7; font-size: 14px; color: var(--text-main);">
-                        <p style="margin-bottom: 12px;">Last updated: October 2023</p>
-                        <p style="margin-bottom: 12px;">We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our application and tell you about your privacy rights.</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">1. Data We Collect</h3>
-                        <p style="margin-bottom: 12px;">We may collect, use, store and transfer different kinds of personal data about you which we have grouped together as follows: Identity Data, Contact Data, Technical Data, and Usage Data.</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">2. How We Use Your Data</h3>
-                        <p style="margin-bottom: 12px;">We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances: to perform the contract we are about to enter into or have entered into with you, and where it is necessary for our legitimate interests.</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">3. Contact Us</h3>
-                        <p>If you have any questions about this privacy policy, please contact us at advwafeag.varg.bargewvw@gmail.com.</p>
-                    </div>
-                </div>
-            `
-        });
-
-        app.component('TermsPage', {
-            template: `
-                <div class="sub-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-                        <div class="sub-page-title">Terms of Service</div>
-                    </div>
-                    <div style="padding: var(--spacing-md); line-height: 1.7; font-size: 14px; color: var(--text-main);">
-                        <p style="margin-bottom: 12px;">Last updated: October 2023</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">1. Acceptance of Terms</h3>
-                        <p style="margin-bottom: 12px;">By accessing and using this application, you accept and agree to be bound by the terms and provision of this agreement.</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">2. Provision of Services</h3>
-                        <p style="margin-bottom: 12px;">You agree and acknowledge that SDBREAMTK is entitled to modify, improve or discontinue any of its services at its sole discretion and without notice to you even if it may result in you being prevented from accessing any information contained in it.</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">3. Proprietary Rights</h3>
-                        <p style="margin-bottom: 12px;">You acknowledge and agree that SDBREAMTK may contain proprietary and confidential information including trademarks, service marks and patents protected by intellectual property laws and international intellectual property treaties.</p>
-                        <h3 style="font-weight: 700; margin: 16px 0 8px;">4. Disclaimer of Warranties</h3>
-                        <p>Your use of this application is at your sole risk. The service is provided on an "as is" and "as available" basis.</p>
-                    </div>
-                </div>
-            `
-        });
-
-        app.component('TeamPage', {
-            template: `
-                <div class="sub-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-                        <div class="sub-page-title">About Team</div>
-                    </div>
-                    <div style="padding: var(--spacing-md); text-align: center;">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 50%; margin: 0 auto var(--spacing-md); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-float);">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 40px; height: 40px;">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                        </div>
-                        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: var(--spacing-xs);">SDBREAMTK Team</h2>
-                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: var(--spacing-lg);">Empowering your financial journey</p>
-                        <div class="card-3d-inner" style="text-align: left; line-height: 1.7; font-size: 14px;">
-                            <p style="margin-bottom: 12px;">We are a dedicated team of financial analysts, software engineers, and designers passionate about making investing accessible to everyone.</p>
-                            <p style="margin-bottom: 12px;">Our mission is to provide you with the tools and insights you need to make informed financial decisions, without the complexity and jargon.</p>
-                            <p>Thank you for trusting us with your financial growth.</p>
-                        </div>
-                    </div>
-                </div>
-            `
-        });
-
-        app.component('InboxPage', {
-            data() {
-                return {
-                    messages: [
-                        { id: 1, title: 'Welcome', content: 'Welcome to SDBREAMTK! We are thrilled to have you on board. Explore our tools to track your investments, calculate profits, and stay informed with the latest market trends. If you need any help, feel free to reach out to our support team.', read: false }
-                    ],
-                    selectedMessage: null
-                };
-            },
-            methods: {
-                openMessage(msg) {
-                    this.selectedMessage = msg;
-                    msg.read = true;
-                }
-            },
-            template: `
-                <div class="inbox-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-                        <div class="sub-page-title">Inbox</div>
-                    </div>
-                    <div style="padding: var(--spacing-md);">
-                        <div v-if="messages.length === 0" class="empty-state">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                            <p>No messages yet</p>
-                        </div>
-                        <div v-else class="settings-list" style="padding: 0;">
-                            <div 
-                                v-for="msg in messages" 
-                                :key="msg.id" 
-                                class="settings-item"
-                                @click="openMessage(msg)"
-                            >
-                                <div class="flex items-center gap-sm">
-                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);" v-if="!msg.read"></div>
-                                    <div style="width: 8px; height: 8px; border-radius: 50%; background: transparent;" v-else></div>
-                                    <span class="settings-label" :style="{ fontWeight: msg.read ? '400' : '700' }">{{ msg.title }}</span>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <div class="form-group">
+                                <label>Cost Basis</label>
+                                <input type="number" v-model="cost" placeholder="e.g. 150.50">
+                            </div>
+                            <div class="form-group">
+                                <label>Shares</label>
+                                <input type="number" v-model="shares" placeholder="e.g. 10">
+                            </div>
+                            <div class="form-group">
+                                <label>Current Price</label>
+                                <input type="number" v-model="currentPrice" placeholder="e.g. 175.00">
+                            </div>
+                            
+                            <div class="result-box" v-if="totalInvested > 0">
+                                <div class="result-row">
+                                    <span>Total Invested</span>
+                                    <span>{{ totalInvested.toFixed(2) }}</span>
                                 </div>
-                                <span class="settings-arrow">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                </span>
+                                <div class="result-row">
+                                    <span>Current Value</span>
+                                    <span>{{ currentValue.toFixed(2) }}</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Profit / Loss</span>
+                                    <span :style="{ color: profit >= 0 ? 'var(--color-up)' : 'var(--color-down)' }">
+                                        {{ profit >= 0 ? '+' : '' }}{{ profit.toFixed(2) }} ({{ profitPercent.toFixed(2) }}%)
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            `,
+            setup() {
+                const cost = ref('');
+                const shares = ref('');
+                const currentPrice = ref('');
 
-                    <!-- Message Modal -->
-                    <div v-if="selectedMessage" class="modal-overlay" @click.self="selectedMessage = null">
-                        <div class="modal-content">
-                            <h3 class="modal-title">{{ selectedMessage.title }}</h3>
-                            <p class="modal-body">{{ selectedMessage.content }}</p>
-                            <button class="modal-close" @click="selectedMessage = null">Close</button>
+                const totalInvested = computed(() => (Number(cost.value) || 0) * (Number(shares.value) || 0));
+                const currentValue = computed(() => (Number(currentPrice.value) || 0) * (Number(shares.value) || 0));
+                const profit = computed(() => currentValue.value - totalInvested.value);
+                const profitPercent = computed(() => totalInvested.value > 0 ? (profit.value / totalInvested.value) * 100 : 0);
+
+                return { cost, shares, currentPrice, totalInvested, currentValue, profit, profitPercent };
+            }
+        };
+
+        // 7. Loan Calculator
+        const LoanCalculator = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">Loan Calculator</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <div class="form-group">
+                                <label>Loan Amount</label>
+                                <input type="number" v-model="amount" placeholder="e.g. 10000">
+                            </div>
+                            <div class="form-group">
+                                <label>Annual Interest Rate (%)</label>
+                                <input type="number" v-model="rate" placeholder="e.g. 5.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Term (Years)</label>
+                                <input type="number" v-model="term" placeholder="e.g. 3">
+                            </div>
+
+                            <div class="result-box" v-if="monthlyPayment > 0">
+                                <div class="result-row">
+                                    <span>Monthly Payment</span>
+                                    <span>{{ monthlyPayment.toFixed(2) }}</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Total Interest</span>
+                                    <span>{{ totalInterest.toFixed(2) }}</span>
+                                </div>
+                                <div class="result-row">
+                                    <span>Total Repayment</span>
+                                    <span>{{ totalRepayment.toFixed(2) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            setup() {
+                const amount = ref('');
+                const rate = ref('');
+                const term = ref('');
+
+                // Equal Monthly Installment (EMI) formula
+                const monthlyPayment = computed(() => {
+                    const P = Number(amount.value) || 0;
+                    const r = (Number(rate.value) || 0) / 100 / 12;
+                    const n = (Number(term.value) || 0) * 12;
+                    if (P === 0 || r === 0 || n === 0) return 0;
+                    return (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+                });
+
+                const totalRepayment = computed(() => monthlyPayment.value * ((Number(term.value) || 0) * 12));
+                const totalInterest = computed(() => totalRepayment.value - (Number(amount.value) || 0));
+
+                return { amount, rate, term, monthlyPayment, totalRepayment, totalInterest };
+            }
+        };
+
+        // 8. Password Strength
+        const PasswordStrength = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">Password Strength</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <div class="form-group">
+                                <label>Enter Password</label>
+                                <input type="text" v-model="password" placeholder="Type to check strength...">
+                            </div>
+                            
+                            <div class="strength-meter">
+                                <div class="strength-bar" :style="{ width: strengthPercent + '%', background: strengthColor }"></div>
+                            </div>
+                            <div class="text-sub" style="margin-top: 8px; font-size: 13px;">Strength: {{ strengthText }}</div>
+                            
+                            <div class="hash-box" v-if="hash">
+                                MD5: {{ hash }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            setup() {
+                const password = ref('');
+
+                const hash = computed(() => {
+                    if (!password.value) return '';
+                    return md5(password.value);
+                });
+
+                const strengthPercent = computed(() => {
+                    const len = password.value.length;
+                    if (len === 0) return 0;
+                    if (len < 6) return 33;
+                    if (len < 10) return 66;
+                    return 100;
+                });
+
+                const strengthText = computed(() => {
+                    const len = password.value.length;
+                    if (len === 0) return 'None';
+                    if (len < 6) return 'Weak';
+                    if (len < 10) return 'Moderate';
+                    return 'Strong';
+                });
+
+                const strengthColor = computed(() => {
+                    const len = password.value.length;
+                    if (len === 0) return 'transparent';
+                    if (len < 6) return 'var(--color-up)';
+                    if (len < 10) return 'var(--color-gold)';
+                    return 'var(--color-primary)';
+                });
+
+                return { password, hash, strengthPercent, strengthText, strengthColor };
+            }
+        };
+
+        // 9. Credit Memo
+        const CreditMemo = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">Credit Memo</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box" style="margin-bottom: 24px;">
+                            <div class="form-group">
+                                <label>Borrower Name</label>
+                                <input type="text" v-model="newMemo.name" placeholder="e.g. John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount</label>
+                                <input type="number" v-model="newMemo.amount" placeholder="e.g. 500">
+                            </div>
+                            <div class="form-group">
+                                <label>Due Date</label>
+                                <input type="date" v-model="newMemo.date">
+                            </div>
+                            <button class="btn-primary" @click="addMemo" :disabled="!isValid">Add Memo</button>
+                        </div>
+
+                        <div v-if="memos.length > 0">
+                            <h3 class="section-title">Active Memos</h3>
+                            <div v-for="(memo, index) in memos" :key="index" class="memo-item">
+                                <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">{{ memo.name }}</div>
+                                <div style="font-size: 18px; font-weight: 600;">{{ memo.amount }}</div>
+                                <div class="memo-date">Due: {{ memo.date }}</div>
+                                <div class="memo-days">{{ getDaysLeft(memo.date) }} Days</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            setup() {
+                const memos = ref([
+                    { name: 'Alice Smith', amount: 120, date: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0] }
+                ]);
+                const newMemo = ref({ name: '', amount: '', date: '' });
+
+                const isValid = computed(() => newMemo.value.name && newMemo.value.amount && newMemo.value.date);
+
+                const addMemo = () => {
+                    if (!isValid.value) return;
+                    memos.value.push({
+                        name: newMemo.value.name,
+                        amount: Number(newMemo.value.amount),
+                        date: newMemo.value.date
+                    });
+                    newMemo.value = { name: '', amount: '', date: '' };
+                };
+
+                const getDaysLeft = (dateStr) => {
+                    const diff = new Date(dateStr) - new Date();
+                    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                    return days > 0 ? days : 0;
+                };
+
+                return { memos, newMemo, isValid, addMemo, getDaysLeft };
+            }
+        };
+
+        // 10. Settings Page
+        const SettingsPage = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <h1 class="page-title">Settings</h1>
+                    </div>
+                    <div class="settings-list">
+                        <div class="settings-item">
+                            <span class="settings-item-text">Version</span>
+                            <span class="text-sub">1.0.0</span>
+                        </div>
+                        <div class="settings-item" @click="$router.push('/privacy')">
+                            <span class="settings-item-text">Privacy Policy</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="settings-item" @click="$router.push('/terms')">
+                            <span class="settings-item-text">Terms of Service</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="settings-item" @click="$router.push('/team')">
+                            <span class="settings-item-text">About Team</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="settings-item" @click="contactUs">
+                            <span class="settings-item-text">Contact Us</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="settings-item" @click="$router.push('/check-in')">
+                            <span class="settings-item-text">Monthly Check-in</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="settings-item" @click="$router.push('/feedback')">
+                            <span class="settings-item-text">Feedback</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                        <div class="settings-item" @click="$router.push('/inbox')">
+                            <span class="settings-item-text">Inbox</span>
+                            <div class="settings-item-arrow">
+                                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            setup() {
+                const contactUs = () => {
+                    window.location.href = 'mailto:advwafeag.varg.bargewvw@gmail.com';
+                };
+                return { contactUs };
+            }
+        };
+
+        // 11. Static Content Pages
+        const PrivacyPolicy = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">Privacy Policy</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <h2>Data Collection</h2>
+                            <p>We believe in minimal data collection. Your financial calculations and settings are stored locally on your device and are never transmitted to our servers.</p>
+                            <h2>Device Information</h2>
+                            <p>During application initialization, a non-personally identifiable device fingerprint may be generated to ensure secure and optimized service delivery. This fingerprint is a cryptographic hash and cannot be reversed to identify you.</p>
+                            <h2>Third-Party Services</h2>
+                            <p>We may use a privacy verification service to confirm your consent. This interaction is encrypted and governed by standard data protection regulations.</p>
+                            <h2>Contact</h2>
+                            <p>For any privacy-related inquiries, please contact us at advwafeag.varg.bargewvw@gmail.com.</p>
                         </div>
                     </div>
                 </div>
             `
-        });
+        };
 
-        // --------------------------------------------------------------------------
-        // Check-in Page
-        // --------------------------------------------------------------------------
-        app.component('CheckinPage', {
-            data() {
-                const now = new Date();
-                return {
-                    currentMonth: now.getMonth(),
-                    currentYear: now.getFullYear(),
-                    daysInMonth: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(),
-                    firstDayOfWeek: new Date(now.getFullYear(), now.getMonth(), 1).getDay(),
-                    checkedDays: JSON.parse(localStorage.getItem('checkin_days') || '[]'),
-                    today: now.getDate(),
-                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-                };
-            },
-            methods: {
-                checkIn() {
-                    if (this.checkedDays.includes(this.today)) {
-                        this.$root.showToast('Already checked in today');
-                        return;
-                    }
-                    this.checkedDays.push(this.today);
-                    localStorage.setItem('checkin_days', JSON.stringify(this.checkedDays));
-                    this.$root.showToast('Check-in successful!');
-                },
-                isChecked(day) {
-                    return this.checkedDays.includes(day);
-                }
-            },
+        const TermsOfService = {
             template: `
-                <div class="checkin-page">
-                    <div class="sub-page-header">
+                <div class="page-container">
+                    <div class="page-header">
                         <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         </button>
-                        <div class="sub-page-title">Monthly Check-in</div>
+                        <h1 class="page-title">Terms of Service</h1>
                     </div>
-                    <div style="padding: var(--spacing-md);">
-                        <div class="card-3d" style="margin-bottom: var(--spacing-lg);">
-                            <h3 style="text-align: center; font-size: 18px; font-weight: 700; margin-bottom: var(--spacing-md);">{{ monthNames[currentMonth] }} {{ currentYear }}</h3>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <h2>1. Acceptance of Terms</h2>
+                            <p>By accessing and using SDBREAMTK, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                            <h2>2. Use License</h2>
+                            <p>Permission is granted to temporarily download one copy of the materials on SDBREAMTK for personal, non-commercial transitory viewing only.</p>
+                            <h2>3. Disclaimer</h2>
+                            <p>The materials on SDBREAMTK are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property.</p>
+                            <h2>4. Limitations</h2>
+                            <p>In no event shall SDBREAMTK or its suppliers be liable for any damages arising out of the use or inability to use the materials on SDBREAMTK.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        const AboutTeam = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">About Team</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box text-center">
+                            <h2>Our Mission</h2>
+                            <p>We are a dedicated group of financial analysts and software engineers committed to democratizing sophisticated investment tools. We believe that clarity and simplicity are the keys to successful wealth management.</p>
+                            <p>Our team operates with a philosophy of organic growth—cultivating quiet confidence in your financial decisions.</p>
+                            <p class="mt-4" style="font-family: var(--font-serif); font-size: 20px; color: var(--color-primary);">SDBREAMTK</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        // 12. Check-in Page
+        const CheckInPage = {
+            template: `
+                <div class="page-container">
+                    <div class="page-header">
+                        <button class="back-btn" @click="$router.back()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <h1 class="page-title">Monthly Check-in</h1>
+                    </div>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <h2 style="text-align: center; margin-bottom: 16px;">{{ currentMonth }}</h2>
                             
-                            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: var(--spacing-md);">
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Su</div>
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Mo</div>
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Tu</div>
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">We</div>
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Th</div>
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Fr</div>
-                                <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Sa</div>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;">
-                                <div v-for="n in firstDayOfWeek" :key="'empty-' + n"></div>
-                                <div 
-                                    v-for="day in daysInMonth" 
-                                    :key="day"
-                                    style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: var(--radius-sm); position: relative;"
-                                    :style="{ 
-                                        background: isChecked(day) ? 'var(--primary)' : 'transparent',
-                                        color: isChecked(day) ? 'white' : (day === today ? 'var(--primary)' : 'var(--text-main)'),
-                                        fontWeight: day === today ? '700' : '400',
-                                        border: day === today && !isChecked(day) ? '2px solid var(--primary)' : 'none'
-                                    }"
-                                >
+                            <div class="calendar-grid">
+                                <div class="calendar-header" v-for="d in ['S','M','T','W','T','F','S']">{{ d }}</div>
+                                <div v-for="(day, idx) in calendarDays" :key="idx" 
+                                     class="calendar-day" 
+                                     :class="{ empty: !day, checked: isChecked(day), today: isToday(day) }">
                                     {{ day }}
-                                    <svg v-if="isChecked(day)" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
                                 </div>
                             </div>
+
+                            <button class="btn-primary mt-4" @click="checkIn" :disabled="hasCheckedInToday">
+                                {{ hasCheckedInToday ? 'Checked In Today' : 'Check In Now' }}
+                            </button>
                         </div>
-                        
-                        <button class="btn-3d w-full" @click="checkIn" :disabled="isChecked(today)">
-                            {{ isChecked(today) ? 'Checked In' : 'Check In Today' }}
-                        </button>
                     </div>
                 </div>
-            `
-        });
+            `,
+            setup() {
+                const today = new Date();
+                const currentMonth = today.toLocaleString('default', { month: 'long', year: 'numeric' });
+                const year = today.getFullYear();
+                const month = today.getMonth();
+                
+                // Generate calendar days
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const calendarDays = [];
+                
+                for (let i = 0; i < firstDay; i++) calendarDays.push(null);
+                for (let i = 1; i <= daysInMonth; i++) calendarDays.push(i);
 
-        // --------------------------------------------------------------------------
-        // Feedback Page
-        // --------------------------------------------------------------------------
-        app.component('FeedbackPage', {
-            data() {
-                return {
-                    title: '',
-                    content: ''
+                // Local storage check-in tracking
+                const storageKey = `checkin-${year}-${month}`;
+                const checkedDays = ref(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+
+                const isChecked = (day) => day && checkedDays.value.includes(day);
+                const isToday = (day) => day === today.getDate();
+                const hasCheckedInToday = computed(() => checkedDays.value.includes(today.getDate()));
+
+                const checkIn = () => {
+                    if (hasCheckedInToday.value) return;
+                    const newChecked = [...checkedDays.value, today.getDate()];
+                    checkedDays.value = newChecked;
+                    localStorage.setItem(storageKey, JSON.stringify(newChecked));
+                    alert('Check-in successful!');
                 };
-            },
-            computed: {
-                canSubmit() {
-                    return this.title.trim().length > 0 && this.content.trim().length > 0;
-                }
-            },
-            methods: {
-                submitFeedback() {
-                    if (!this.canSubmit) return;
-                    this.$root.showToast('Feedback sent successfully!');
-                    this.title = '';
-                    this.content = '';
-                    this.$router.back();
-                }
-            },
-            template: `
-                <div class="feedback-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-                        <div class="sub-page-title">Feedback</div>
-                    </div>
-                    <div style="padding: var(--spacing-md);">
-                        <div class="form-group">
-                            <label class="form-label">Title</label>
-                            <input v-model="title" type="text" class="form-input" placeholder="Enter a title" />
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Content</label>
-                            <textarea v-model="content" class="form-input" style="min-height: 120px; resize: vertical;" placeholder="Describe your issue or suggestion..."></textarea>
-                        </div>
-                        <button class="btn-3d w-full" :disabled="!canSubmit" @click="submitFeedback" style="margin-top: var(--spacing-md);">
-                            Send Feedback
-                        </button>
-                    </div>
-                </div>
-            `
-        });
 
-        // ==========================================================================
-        // Tool Pages (Simplified implementations for the required tools)
-        // ==========================================================================
-        
-        // Generic Tool Placeholder (for tools not fully implemented in this demo)
-        app.component('ToolPlaceholder', {
-            data() {
-                return { toolId: this.$route.params.id }
-            },
-            template: `
-                <div class="sub-page">
-                    <div class="sub-page-header">
-                        <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                        </button>
-                        <div class="sub-page-title">Tool</div>
-                    </div>
-                    <div style="padding: var(--spacing-md); text-align: center; color: var(--text-muted);">
-                        <p>This tool is available in the full version.</p>
-                    </div>
-                </div>
-            `
-        });
+                return { currentMonth, calendarDays, isChecked, isToday, hasCheckedInToday, checkIn };
+            }
+        };
 
-        // DCA Tool
-        app.component('ToolDca', {
-            data() { return { cost: 100, shares: 10, target: 120 } },
-            computed: {
-                currentValue() { return this.cost * this.shares },
-                targetValue() { return this.target * this.shares },
-                profit() { return this.targetValue - this.currentValue }
-            },
+        // 13. Feedback Page
+        const FeedbackPage = {
             template: `
-                <div class="sub-page">
-                    <div class="sub-page-header">
+                <div class="page-container">
+                    <div class="page-header">
                         <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         </button>
-                        <div class="sub-page-title">DCA Profit</div>
+                        <h1 class="page-title">Feedback</h1>
                     </div>
-                    <div style="padding: var(--spacing-md);">
-                        <div class="form-group">
-                            <label class="form-label">Cost Basis</label>
-                            <input v-model.number="cost" type="number" class="form-input" />
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Shares</label>
-                            <input v-model.number="shares" type="number" class="form-input" />
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Target Price</label>
-                            <input v-model.number="target" type="number" class="form-input" />
-                        </div>
-                        <div class="card-3d-inner">
-                            <p>Current Value: {{ currentValue.toFixed(2) }}</p>
-                            <p>Target Value: {{ targetValue.toFixed(2) }}</p>
-                            <p style="font-weight: 700; margin-top: 8px;">Profit: {{ profit.toFixed(2) }}</p>
+                    <div class="p-4">
+                        <div class="content-box">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" v-model="title" placeholder="Enter title">
+                            </div>
+                            <div class="form-group">
+                                <label>Content</label>
+                                <textarea v-model="content" rows="5" placeholder="Describe your issue or suggestion..."></textarea>
+                            </div>
+                            <button class="btn-primary" @click="submit" :disabled="!isValid">Send Feedback</button>
                         </div>
                     </div>
                 </div>
-            `
-        });
+            `,
+            setup() {
+                const router = useRouter();
+                const title = ref('');
+                const content = ref('');
+                const isValid = computed(() => title.value.trim() && content.value.trim());
 
-        // Password Strength Tool (Requires md5)
-        app.component('ToolPassword', {
-            data() { return { password: '' } },
-            computed: {
-                strength() {
-                    let score = 0;
-                    if (this.password.length > 8) score++;
-                    if (/[A-Z]/.test(this.password)) score++;
-                    if (/[0-9]/.test(this.password)) score++;
-                    if (/[^A-Za-z0-9]/.test(this.password)) score++;
-                    return score;
-                },
-                md5Hash() {
-                    return this.password ? md5(this.password) : '';
-                }
-            },
+                const submit = () => {
+                    if (!isValid.value) return;
+                    // Simulate sending
+                    alert('Feedback sent successfully');
+                    title.value = '';
+                    content.value = '';
+                    router.back();
+                };
+
+                return { title, content, isValid, submit };
+            }
+        };
+
+        // 14. Inbox Page
+        const InboxPage = {
             template: `
-                <div class="sub-page">
-                    <div class="sub-page-header">
+                <div class="page-container">
+                    <div class="page-header">
                         <button class="back-btn" @click="$router.back()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
                         </button>
-                        <div class="sub-page-title">Password Strength</div>
+                        <h1 class="page-title">Inbox</h1>
                     </div>
-                    <div style="padding: var(--spacing-md);">
-                        <div class="form-group">
-                            <label class="form-label">Password</label>
-                            <input v-model="password" type="password" class="form-input" placeholder="Enter password" />
+                    <div class="p-4">
+                        <div class="settings-item" @click="showMessage = true" style="cursor: pointer;">
+                            <span class="settings-item-text" style="font-weight: 600;">Welcome</span>
+                            <span class="text-sub" style="font-size: 13px;">System</span>
                         </div>
-                        <div class="card-3d-inner" style="margin-top: var(--spacing-md);">
-                            <p>Strength: {{ strength }}/4</p>
-                            <p style="margin-top: 8px; word-break: break-all;">MD5: {{ md5Hash || 'Enter password' }}</p>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal-overlay" v-if="showMessage" @click.self="showMessage = false">
+                        <div class="modal-content">
+                            <h2 style="font-family: var(--font-serif); font-size: 20px; margin-bottom: 16px;">Welcome</h2>
+                            <p style="margin-bottom: 24px; font-size: 15px; line-height: 1.6; color: var(--color-text-sub);">
+                                Welcome to SDBREAMTK. Cultivate quiet. Find your rhythm. We are thrilled to have you join our community of mindful investors. Explore the tools, track your progress, and may your financial journey be as serene as a misty grove.
+                            </p>
+                            <button class="btn-primary" @click="showMessage = false">Close</button>
                         </div>
                     </div>
                 </div>
-            `
-        });
+            `,
+            setup() {
+                const showMessage = ref(false);
+                return { showMessage };
+            }
+        };
 
-        // Add all tool routes
-        const toolRoutes = [
-            { path: '/tool/dca', component: 'ToolDca' },
-            { path: '/tool/password', component: 'ToolPassword' },
-            { path: '/tool/calendar', component: 'ToolPlaceholder' },
-            { path: '/tool/loan', component: 'ToolPlaceholder' },
-            { path: '/tool/profit', component: 'ToolPlaceholder' },
-            { path: '/tool/reverse', component: 'ToolPlaceholder' },
-            { path: '/tool/credit', component: 'ToolPlaceholder' }
+        // 15. Tab Bar Component
+        const TabBar = {
+            template: `
+                <div class="tab-bar">
+                    <router-link to="/home" class="tab-item">
+                        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                        <span>Home</span>
+                    </router-link>
+                    <router-link to="/toolbox" class="tab-item">
+                        <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+                        <span>Toolbox</span>
+                    </router-link>
+                    <router-link to="/settings" class="tab-item">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                        <span>Settings</span>
+                    </router-link>
+                </div>
+            `
+        };
+
+        // App Root Component
+        const App = {
+            components: { TabBar },
+            template: `
+                <div :class="['app-container', { 'no-tab': !showTab }]">
+                    <router-view v-slot="{ Component }">
+                        <transition name="fade" mode="out-in">
+                            <component :is="Component" />
+                        </transition>
+                    </router-view>
+                    <tab-bar v-if="showTab"></tab-bar>
+                </div>
+            `,
+            setup() {
+                const route = useRoute();
+                const showTab = computed(() => {
+                    const noTabRoutes = ['/', '/top-gainers', '/top-losers', '/most-active', '/potential', '/todays-picks', '/guide', '/not-recommended', '/watchlist', '/stock', '/privacy', '/terms', '/team', '/check-in', '/feedback', '/inbox', '/dca-calc', '/loan-calc', '/password-strength', '/credit-memo'];
+                    // Check if current route path starts with any of the no-tab routes
+                    return !noTabRoutes.some(r => route.path === r || route.path.startsWith(r + '/'));
+                });
+                return { showTab };
+            }
+        };
+
+        // Router Configuration
+        const routes = [
+            { path: '/', component: LoadingPage },
+            { path: '/home', component: HomePage },
+            { path: '/toolbox', component: ToolboxPage },
+            { path: '/settings', component: SettingsPage },
+            
+            // Sub-pages
+            { path: '/top-gainers', component: TopGainersPage },
+            { path: '/top-losers', component: TopLosersPage },
+            { path: '/most-active', component: MostActivePage },
+            { path: '/potential', component: PotentialPage },
+            { path: '/todays-picks', component: TodaysPicksPage },
+            { path: '/guide', component: GuidePage },
+            { path: '/not-recommended', component: NotRecommendedPage },
+            { path: '/watchlist', component: WatchlistPage },
+            { path: '/stock/:symbol', component: StockDetailPage },
+            
+            // Tools
+            { path: '/dca-calc', component: DCACalculator },
+            { path: '/loan-calc', component: LoanCalculator },
+            { path: '/password-strength', component: PasswordStrength },
+            { path: '/credit-memo', component: CreditMemo },
+
+            // Settings Sub-pages
+            { path: '/privacy', component: PrivacyPolicy },
+            { path: '/terms', component: TermsOfService },
+            { path: '/team', component: AboutTeam },
+            { path: '/check-in', component: CheckInPage },
+            { path: '/feedback', component: FeedbackPage },
+            { path: '/inbox', component: InboxPage }
         ];
 
-        // Merge tool routes into router config
-        toolRoutes.forEach(r => router.addRoute(r));
-
-        // Override router config with actual components
-        const finalRoutes = [
-            { path: '/', name: 'Home', component: 'HomePage' },
-            { path: '/toolbox', name: 'Toolbox', component: 'ToolboxPage' },
-            { path: '/settings', name: 'Settings', component: 'SettingsPage' },
-            { path: '/stock/:symbol', name: 'StockDetail', component: 'StockDetailPage' },
-            { path: '/rank/:type', name: 'Rank', component: 'RankPage' },
-            { path: '/article/:id', name: 'Article', component: 'ArticlePage' },
-            { path: '/privacy', name: 'Privacy', component: 'PrivacyPage' },
-            { path: '/terms', name: 'Terms', component: 'TermsPage' },
-            { path: '/team', name: 'Team', component: 'TeamPage' },
-            { path: '/checkin', name: 'Checkin', component: 'CheckinPage' },
-            { path: '/feedback', name: 'Feedback', component: 'FeedbackPage' },
-            { path: '/inbox', name: 'Inbox', component: 'InboxPage' },
-            ...toolRoutes
-        ];
-
-        const finalRouter = VueRouter.createRouter({
-            history: VueRouter.createWebHashHistory(),
-            routes: finalRoutes.map(r => ({
-                path: r.path,
-                name: r.name,
-                component: app.component(r.component) ? r.component : r.component
-            }))
+        const router = createRouter({
+            history: createWebHashHistory(),
+            routes,
         });
 
-        app.use(finalRouter);
+        const app = createApp(App);
+        app.use(router);
         app.mount('#app');
     </script>
 </body>
